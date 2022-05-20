@@ -106,7 +106,7 @@ This tells us that a `Kennel` has a property `dogs` that is an array of elements
 ## Entity Relationship Diagram
 ![Spring Assessment ERD](https://user-images.githubusercontent.com/32781877/169579728-d766de24-14d8-4b47-a8fb-cbcbaa1effa8.png)
 
-This ERD represents the database that students will create for this project. There are only 3 classes that should be annotated with `@Entity`. There are, however, also 2 more classes that need students should create for this project: `Credentials` and `Profile`. Those two classes will be annotated with `@Embeddable` and will be used in the `User` entity class with the `@Embedded` annotation. This allows us to maintain credentials and profile as seperate objects in Java while still being stored in just 1 table in the database.
+This ERD represents the database that students will create for this project. Students should only create three classes, `User`, `Tweet`, and `Hashtag`, annotated with `@Entity`. There are, however, two additional classes that students will need to create for this project: `Credentials` and `Profile`. These two classes will be annotated with `@Embeddable` and will be used inside of the `User` entity class with the `@Embedded` annotation. This allows us to maintain credentials and profile as seperate objects in Java while still being stored in just one table in the database.
 
 **IMPORTANT:** The `User` entity will also need to use an `@Table(name=<newName>)` annotation to give its table a different name as `user` is a reserved keyword in PostgreSQL.
 
