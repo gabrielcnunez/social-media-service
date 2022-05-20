@@ -104,7 +104,7 @@ If a property should be an array of a specific type of element, it is represente
 This tells us that a `Kennel` has a property `dogs` that is an array of elements, the type of each of which is described by the `Dog` type
 
 ## Entity Relationship Diagram
-![Social Media ERD](https://user-images.githubusercontent.com/12191780/137747157-d2c47313-f68d-4b35-999c-2a4993b06ab6.png)
+![Spring Assessment ERD](https://user-images.githubusercontent.com/32781877/169579728-d766de24-14d8-4b47-a8fb-cbcbaa1effa8.png)
 
 This ERD represents the database that students will create for this project. There are only 3 classes that should be annotated with `@Entity`. There are, however, also 2 more classes that need students should create for this project: `Credentials` and `Profile`. Those two classes will be annotated with `@Embeddable` and will be used in the `User` entity class with the `@Embedded` annotation. This allows us to maintain credentials and profile as seperate objects in Java while still being stored in just 1 table in the database.
 
