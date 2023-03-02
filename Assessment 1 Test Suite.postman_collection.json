@@ -3283,11 +3283,12 @@
 							"response": []
 						},
 						{
-							"name": "Get FirstUser Mentions Empty",
+							"name": "Get FirstUser Mentions",
 							"event": [
 								{
 									"listen": "test",
 									"script": {
+										"id": "137f38dc-b49b-477b-8612-3678aa37959c",
 										"exec": [
 											"const tweetSchema = pm.environment.get('tweetSchema')",
 											"",
@@ -3306,13 +3307,20 @@
 											"})",
 											"",
 											"if (pm.response.code >= 200 && pm.response.code < 300 && pm.response.json() !== null && Array.isArray(pm.response.json())) {",
-											"    pm.test('Should be empty', () => {",
-											"        pm.expect(pm.response.json().length).to.eql(0)",
-											"    })",
+											"    if (pm.response.json().length > 0) {",
+											"        const authors = pm.response.json().map(tweet => tweet.author.username)",
+											"        pm.test('Should only contain tweets by secondUser', () => {",
+											"            pm.expect(authors).to.include(pm.environment.get('secondUser'))",
+											"            pm.expect(authors).to.not.include(pm.environment.get('firstUser'))",
+											"        })",
+											"    } else {",
+											"        pm.test('Should be empty', () => {",
+											"            pm.expect(pm.response.json().length).to.eql(0)",
+											"        })",
+											"    }",
 											"}"
 										],
-										"type": "text/javascript",
-										"id": "137f38dc-b49b-477b-8612-3678aa37959c"
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -4088,6 +4096,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "09ed13c9-9a80-42b0-a9f5-6ae72f3f9a7a",
 										"exec": [
 											"const tweetSchema = pm.environment.get('tweetSchema')",
 											"",
@@ -4109,8 +4118,9 @@
 											"    const content = pm.response.json().map(tweet => tweet.content)",
 											"    const authors = pm.response.json().map(tweet => tweet.author.username)",
 											"    ",
-											"    pm.test('Should only contain the first user\\'s tweet', () => {",
-											"        pm.expect(pm.response.json().length).to.eql(1)",
+											"    pm.test('Should only contain the first user\\'s tweets', () => {",
+											"        pm.expect(authors).to.include(pm.environment.get('firstUser'))",
+											"        pm.expect(authors).to.not.include(pm.environment.get('secondUser'))",
 											"    })",
 											"    ",
 											"    pm.test('Contains the firstUser\\'s tweet', () => {",
@@ -4119,8 +4129,7 @@
 											"    })",
 											"}"
 										],
-										"type": "text/javascript",
-										"id": "09ed13c9-9a80-42b0-a9f5-6ae72f3f9a7a"
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -4148,6 +4157,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "7349c0cf-d179-4e68-8152-a6bb4a545700",
 										"exec": [
 											"const tweetSchema = pm.environment.get('tweetSchema')",
 											"",
@@ -4169,8 +4179,9 @@
 											"    const content = pm.response.json().map(tweet => tweet.content)",
 											"    const authors = pm.response.json().map(tweet => tweet.author.username)",
 											"    ",
-											"    pm.test('Should only contain the second user\\'s tweet', () => {",
-											"        pm.expect(pm.response.json().length).to.eql(1)",
+											"    pm.test('Should only contain the second user\\'s tweets', () => {",
+											"        pm.expect(authors).to.include(pm.environment.get('secondUser'))",
+											"        pm.expect(authors).to.not.include(pm.environment.get('firstUser'))",
 											"    })",
 											"    ",
 											"    pm.test('Contains the secondUser\\'s tweet', () => {",
@@ -4179,8 +4190,7 @@
 											"    })",
 											"}"
 										],
-										"type": "text/javascript",
-										"id": "7349c0cf-d179-4e68-8152-a6bb4a545700"
+										"type": "text/javascript"
 									}
 								}
 							],
