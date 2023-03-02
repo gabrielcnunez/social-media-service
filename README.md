@@ -10,6 +10,7 @@ You will implement this API from scratch, working from a series of endpoint spec
 ## Testing the API
 Included in this skeleton are 2 json files required to run the test suite for this final project. To run the tests you will need postman's newman CLI. To install newman run the command `npm install -g newman`. Once newman is installed you need to navigate to the folder containing the Assessment 1 Test Suite & Assessment 1 environment json files. Once there you can run the command `newman run "Assessment 1 Test Suite.postman_collection.json" -e "Assessment 1.postman_environment.json"`. When all tests are passing successfully you will pass 330 assertions and should see something similar to the following in your terminal:
 
+<img width="458" alt="successful_tests" src="https://user-images.githubusercontent.com/12191780/222555974-53992ad3-155c-4e77-9205-bc3b908e093c.png">
 
 
 ## Reading these Requirements
