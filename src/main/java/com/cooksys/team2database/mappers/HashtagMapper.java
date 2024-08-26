@@ -1,5 +1,10 @@
 package com.cooksys.team2database.mappers;
 
-public class HashtagMapper {
+import org.mapstruct.Mapper;
 
+@Mapper(componentModel = "spring")
+public interface HashtagMapper {
+
+	// credential request, convert to something??
+	
 }

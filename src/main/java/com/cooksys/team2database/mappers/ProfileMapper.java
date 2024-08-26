@@ -1,5 +1,5 @@
 package com.cooksys.team2database.mappers;
 
-public class ProfileMapper {
+public interface ProfileMapper {
 
 }
