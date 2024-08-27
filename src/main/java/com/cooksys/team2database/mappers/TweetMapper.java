@@ -8,8 +8,9 @@ import com.cooksys.team2database.dtos.ContextDto;
 import com.cooksys.team2database.dtos.TweetRequestDto;
 import com.cooksys.team2database.dtos.TweetResponseDto;
 import com.cooksys.team2database.entities.Tweet;
+import com.cooksys.team2database.entities.User;
 
-@Mapper(componentModel = "spring", uses = {  })
+@Mapper(componentModel = "spring", uses = { User.class })
 public interface TweetMapper {
 
 	// idk if these parameters will work with lombok
