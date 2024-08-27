@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.client.HttpClientErrorException.Unauthorized;
 
-import com.cooksys.quiz_api.dtos.ErrorDto;
-import com.cooksys.quiz_api.exceptions.BadRequestException;
-import com.cooksys.quiz_api.exceptions.NotFoundException;
+import com.cooksys.team2database.dtos.ErrorDto;
+import com.cooksys.team2database.exceptions.BadRequestException;
+import com.cooksys.team2database.exceptions.NotFoundException;
 
 
 @ControllerAdvice(basePackages = {"com.cooksys.team2database.controllers"})
