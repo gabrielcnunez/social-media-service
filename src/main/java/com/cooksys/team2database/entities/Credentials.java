@@ -8,9 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class Credentials {
-	
+
 	private String username;
 	
 	private String password;
-
 }

@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 @Data
 public class UserResponseDto {
 	
-	private Long id;
-	
 	private String username;
 	
 	private Profile profile;
