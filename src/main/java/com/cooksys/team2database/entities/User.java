@@ -2,6 +2,7 @@ package com.cooksys.team2database.entities;
 
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -35,11 +36,11 @@ public class User {
 	  Profile profile;
 	  
 //	  One user can have many tweets
-	  @OneToMany(mappedBy = "author")
+	  @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
 	  private List<Tweet> tweets; 
 	  
 //	  users can like many tweets
-	  @ManyToMany
+	  @ManyToMany(cascade = CascadeType.ALL)
 	  @JoinTable(
 			  name = "user_likes",
 			  joinColumns = @JoinColumn(name = "user_id"),
@@ -47,7 +48,7 @@ public class User {
 	  private List<Tweet> likesFromUser;
 	  
 //	  users can mention many users in a tweet
-	  @ManyToMany
+	  @ManyToMany(cascade = CascadeType.ALL)
 	  @JoinTable(
 			  name = "user_mentions",
 			  joinColumns = @JoinColumn(name = "user_id"),
@@ -55,7 +56,7 @@ public class User {
 	  private List<Tweet> tweetsMentioningUser;
 	  
 //	  a user can follow many users
-	  @ManyToMany
+	  @ManyToMany(cascade = CascadeType.ALL)
 	  @JoinTable(
 			  name = "followers_following",
 			  joinColumns = @JoinColumn(name = "follower_id"),
@@ -63,6 +64,6 @@ public class User {
 	  private List<User> followingList;
 	  
 //	  a user can have many followers
-	  @ManyToMany(mappedBy = "followingList")
+	  @ManyToMany(mappedBy = "followingList", cascade = CascadeType.ALL)
 	  private List<User> followersList;
 }

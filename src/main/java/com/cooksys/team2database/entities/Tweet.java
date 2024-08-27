@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.hibernate.annotations.ManyToAny;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -50,7 +51,7 @@ public class Tweet {
 	  private List<Tweet> reposts;
 	  
 //	  a tweet can have many hashtags
-	  @ManyToMany
+	  @ManyToMany(cascade = CascadeType.ALL)
 	  @JoinTable(
 			  name = "tweet_hashtags",
 			  joinColumns = @JoinColumn(name = "tweet_id"),

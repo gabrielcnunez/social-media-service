@@ -1,11 +1,11 @@
 package com.cooksys.team2database.repositories;
 
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import com.cooksys.team2database.dtos.TweetResponseDto;
+import com.cooksys.team2database.entities.Tweet;
 
-public interface TweetRepository {
-
-	List<TweetResponseDto> findAll();
+@Repository
+public interface TweetRepository extends JpaRepository<Tweet, Long> {
 
 }
