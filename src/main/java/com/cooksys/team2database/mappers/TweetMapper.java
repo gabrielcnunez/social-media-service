@@ -10,16 +10,15 @@ import com.cooksys.team2database.dtos.TweetResponseDto;
 import com.cooksys.team2database.entities.Tweet;
 import com.cooksys.team2database.entities.User;
 
-@Mapper(componentModel = "spring", uses = { User.class })
+@Mapper(componentModel = "spring", uses = { UserMapper.class })
 public interface TweetMapper {
 
-	// idk if these parameters will work with lombok
-	ContextDto contextEntityToResponseDto(Tweet target, List<Tweet> before, List<Tweet> after);
-	
-	Tweet requestDtoToentity(TweetRequestDto tweetRequestDto);
-	
-	TweetResponseDto tweetEntityToResponseDto(Tweet tweet);
-	
-	List<TweetResponseDto> tweetEntityToResponseDtos(List<Tweet> tweets);
+	TweetResponseDto entityToDto(Tweet tweet);
+
+    Tweet responseDtoToEntity(TweetResponseDto tweetResponseDto);
+
+    Tweet requestDtoToEntity(TweetRequestDto tweetRequestDto);
+
+    List<TweetResponseDto> entitiesToDtos(List<Tweet> tweets);
 
 }

@@ -1,8 +1,9 @@
 package com.cooksys.team2database.entities;
 
+import java.sql.Timestamp;
 import java.util.List;
 
-import org.hibernate.annotations.ManyToAny;
+import org.hibernate.annotations.CreationTimestamp;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -25,12 +26,11 @@ public class Tweet {
 	  @GeneratedValue
 	  private Long id;
 	  
-//	  many tweets can belong to one user
 	  @ManyToOne
-	  @JoinColumn(name = "user_id")
 	  private User author;
 	  
-	  private Long posted;
+	  @CreationTimestamp
+	  private Timestamp posted;
 	  
 	  private boolean deleted = false;
 	  
@@ -51,19 +51,22 @@ public class Tweet {
 	  private List<Tweet> reposts;
 	  
 //	  a tweet can have many hashtags
-	  @ManyToMany(cascade = CascadeType.ALL)
+	  @ManyToMany(cascade = CascadeType.MERGE)
 	  @JoinTable(
 			  name = "tweet_hashtags",
 			  joinColumns = @JoinColumn(name = "tweet_id"),
 			  inverseJoinColumns = @JoinColumn(name = "hashtag_id"))
-	  private List<Hashtag> hashtagsInTweet;
+	  private List<Hashtag> hashtags;
 	  
-//	  a tweet can have many likes
-	  @ManyToMany(mappedBy = "likesFromUser")
-	  private List<User> usersFromLike;
-	  
-//	  tweets can mention many users
-	  @ManyToMany(mappedBy = "tweetsMentioningUser")
-	  private List<User> usersMentionedInTweet;
+	  @ManyToMany(mappedBy = "likedTweets")
+	  private List<User> likedByUsers;
+
+	  @ManyToMany
+	  @JoinTable(
+	          name = "user_mentions",
+	          joinColumns = @JoinColumn(name = "tweet_id"),
+	          inverseJoinColumns = @JoinColumn(name = "user_id")
+	  )
+	  private List<User> mentionedUsers;
 
 }

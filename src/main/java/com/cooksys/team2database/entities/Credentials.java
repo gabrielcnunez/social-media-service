@@ -1,5 +1,6 @@
 package com.cooksys.team2database.entities;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,7 +10,9 @@ import lombok.NoArgsConstructor;
 @Data
 public class Credentials {
 
-	private String username;
-	
-	private String password;
+	@Column(nullable = false, unique = true)
+    private String username;
+
+    @Column(nullable = false)
+    private String password;
 }

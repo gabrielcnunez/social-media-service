@@ -1,6 +1,9 @@
 package com.cooksys.team2database.entities;
 
+import java.sql.Timestamp;
 import java.util.List;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embedded;
@@ -25,45 +28,39 @@ public class User {
 	  @GeneratedValue
 	  private Long id;
 	  
-	  private Long joined;
+	  @CreationTimestamp
+	  private Timestamp joined;
 	  
 	  private boolean deleted = false;
 	  
 	  @Embedded
-	  Credentials credentials;
+	  private Credentials credentials;
 	  
 	  @Embedded 
-	  Profile profile;
+	  private Profile profile;
 	  
 //	  One user can have many tweets
-	  @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
+	  @OneToMany(mappedBy = "author")
 	  private List<Tweet> tweets; 
 	  
 //	  users can like many tweets
-	  @ManyToMany(cascade = CascadeType.ALL)
+	  @ManyToMany
 	  @JoinTable(
 			  name = "user_likes",
 			  joinColumns = @JoinColumn(name = "user_id"),
 			  inverseJoinColumns = @JoinColumn(name = "tweet_id"))
-	  private List<Tweet> likesFromUser;
+	  private List<Tweet> likedTweets;
 	  
 //	  users can mention many users in a tweet
-	  @ManyToMany(cascade = CascadeType.ALL)
-	  @JoinTable(
-			  name = "user_mentions",
-			  joinColumns = @JoinColumn(name = "user_id"),
-			  inverseJoinColumns = @JoinColumn(name = "tweet_id"))
-	  private List<Tweet> tweetsMentioningUser;
+	  @ManyToMany(mappedBy = "mentionedUsers")
+	   private List<Tweet> mentionedTweets;
 	  
 //	  a user can follow many users
-	  @ManyToMany(cascade = CascadeType.ALL)
-	  @JoinTable(
-			  name = "followers_following",
-			  joinColumns = @JoinColumn(name = "follower_id"),
-			  inverseJoinColumns = @JoinColumn(name = "following_id"))
-	  private List<User> followingList;
+	  @ManyToMany
+	  @JoinTable(name = "followers_following")
+	  private List<User> followers;
 	  
 //	  a user can have many followers
-	  @ManyToMany(mappedBy = "followingList", cascade = CascadeType.ALL)
-	  private List<User> followersList;
+	  @ManyToMany(mappedBy = "followers")
+	  private List<User> following;
 }

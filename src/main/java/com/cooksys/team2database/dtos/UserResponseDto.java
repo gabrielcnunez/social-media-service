@@ -1,6 +1,6 @@
 package com.cooksys.team2database.dtos;
 
-import com.cooksys.team2database.entities.Profile;
+import java.sql.Timestamp;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,9 +11,9 @@ public class UserResponseDto {
 	
 	private String username;
 	
-	private Profile profile;
+	private ProfileDto profile;
 	
-	private Long joined;
+	private Timestamp joined;
 	
 
 }

@@ -10,6 +10,10 @@ import com.cooksys.team2database.entities.Hashtag;
 @Mapper(componentModel = "spring")
 public interface HashtagMapper {
 
-	List<HashtagDto> entityToDtos(List<Hashtag> hashtags);
+	List<HashtagDto> entitiesToDtos(List<Hashtag> dtos);
+
+    HashtagDto entityToDto(Hashtag hashtag);
+
+    Hashtag dtoToEntity(HashtagDto dto);
 	
 }

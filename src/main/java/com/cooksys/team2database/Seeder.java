@@ -1,7 +1,6 @@
 package com.cooksys.team2database;
 
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.boot.CommandLineRunner;
@@ -22,103 +21,263 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class Seeder implements CommandLineRunner {
 
-	private final HashtagRepository hashtagRepository;
-	private final TweetRepository tweetRepository;
-	private final UserRepository userRepository;
+    private final HashtagRepository hashtagRepository;
+    private final TweetRepository tweetRepository;
+    private final UserRepository userRepository;
 
-	@Override
-	public void run(String... args) throws Exception {
+    @Override
+    public void run(String... args) throws Exception {
 
-//		create user 1
-		User user1 = new User();
-		Date date = new Date();
-		Credentials credentials1 = new Credentials();
-		Profile profile1 = new Profile();
-		long joined = date.getTime();
+        // --- User 1 ---
+        // Credentials
+        Credentials user1Cred = new Credentials();
+        user1Cred.setUsername("therealmc");
+        user1Cred.setPassword("Password");
 
-		credentials1.setUsername("user1");
-		credentials1.setPassword("1234");
+        User user1 = new User();
+        user1.setCredentials(user1Cred);
 
-		profile1.setEmail("user1@gmail.com");
-		profile1.setFirstName("user");
-		profile1.setLastName("one");
-		profile1.setPhone("1234567890");
+        // Profile
+        Profile user1Pro = new Profile();
+        user1Pro.setFirstName("Master");
+        user1Pro.setLastName("Chief");
+        user1Pro.setEmail("sierra117@email.com");
+        user1Pro.setPhone("123-456-7890");
+        user1.setProfile(user1Pro);
 
-		user1.setJoined(joined);
-		user1.setCredentials(credentials1);
-		user1.setProfile(profile1);
+        // Deleted
+        user1.setDeleted(false);
 
-//		create tweet 1
-		Tweet tweet1 = new Tweet();
-		long posted = date.getTime();
+        // --- User 2 ---
+        // Credentials
+        Credentials user2Cred = new Credentials();
+        user2Cred.setUsername("mario");
+        user2Cred.setPassword("password");
 
-		tweet1.setAuthor(user1);
-		tweet1.setPosted(posted);
-		tweet1.setContent("simple tweet, user1's tweet1");
+        User user2 = new User();
+        user2.setCredentials(user2Cred);
 
-//		create hashtag 1
-		Hashtag hashtag1 = new Hashtag();
-		List<Tweet> tweetsUsingHashtag1 = new ArrayList<>();
-		tweetsUsingHashtag1.add(tweet1);
-		hashtag1.setLabel("hashtag1");
-		hashtag1.setFirstUsed(posted);
-		hashtag1.setTweetsInHashtag(tweetsUsingHashtag1);
+        // Profile
+        Profile user2Pro = new Profile();
+        user2Pro.setFirstName("Mario");
+        user2Pro.setLastName("Mario");
+        user2Pro.setEmail("mario@email.com");
+        user2Pro.setPhone("234-567-8901");
+        user2.setProfile(user2Pro);
+        // Deleted
+        user2.setDeleted(false);
 
-//		attach hashtag 1 to tweet 1
-		List<Hashtag> hashtagsInTweet1 = new ArrayList<Hashtag>();
-		hashtagsInTweet1.add(hashtag1);
-		tweet1.setHashtagsInTweet(hashtagsInTweet1);
+        // --- User 3 ---
+        Credentials user3Cred = new Credentials();
+        // Credentials
+        user3Cred.setUsername("Luigi");
+        user3Cred.setPassword("Password");
 
-//		add tweets list to user
-		List<Tweet> tweetsFromUser = new ArrayList<Tweet>();
-		tweetsFromUser.add(tweet1);
-		user1.setTweets(tweetsFromUser);
+        User user3 = new User();
+        user3.setCredentials(user3Cred);
 
-//		create user 2
-		User user2 = new User();
-		Credentials credentials2 = new Credentials();
-		Profile profile2 = new Profile();
-		joined = date.getTime();
+        // Profile
+        Profile user3Pro = new Profile();
+        user3Pro.setFirstName("Luigi");
+        user3Pro.setLastName("Mario");
+        user3Pro.setEmail("luigi@email.com");
+        user3Pro.setPhone("345-678-9012");
+        user3.setProfile(user3Pro);
+        // Deleted
+        user3.setDeleted(false);
 
-		credentials2.setUsername("user2");
-		credentials2.setPassword("5678");
+        // --- User 4 ---
+        // Credentials
+        Credentials user4Cred = new Credentials();
+        user4Cred.setUsername("Nathan");
+        user4Cred.setPassword("Password");
 
-		profile2.setEmail("user2@hotmail.com");
-		profile2.setFirstName("yooser");
-		profile2.setLastName("two");
-		profile2.setPhone("0987654321");
+        User user4 = new User();
+        user4.setCredentials(user4Cred);
 
-		user2.setJoined(joined);
-		user2.setCredentials(credentials2);
-		user2.setProfile(profile2);
+        // Profile
+        Profile user4Pro = new Profile();
+        user4Pro.setFirstName("Nathan");
+        user4Pro.setLastName("Drake");
+        user4Pro.setEmail("nathan@email.com");
+        user4Pro.setPhone("456-789-0023");
+        user4.setProfile(user4Pro);
+        // Deleted
+        user4.setDeleted(false);
 
-//		user 2 follows user 1, update follow and followers list 
-//		for both users
-		List<User> userFollowingList = new ArrayList<User>();
-		userFollowingList.add(user1);
-		user2.setFollowingList(userFollowingList);
+        // --- User 5 ---
+        // Credentials
+        Credentials user5Cred = new Credentials();
+        user5Cred.setUsername("Tarnished");
+        user5Cred.setPassword("Password");
 
-		List<User> userFollowersList = new ArrayList<User>();
-		userFollowersList.add(user2);
-		user1.setFollowersList(userFollowersList);
+        User user5 = new User();
+        user5.setCredentials(user5Cred);
 
-//		user 2 likes user 1's tweet, update the respective lists
-		List<Tweet> userLikes = new ArrayList<Tweet>();
-		userLikes.add(tweet1);
-		user2.setLikesFromUser(userLikes);
+        // Profile
+        Profile user5Pro = new Profile();
+        user5Pro.setFirstName("The");
+        user5Pro.setLastName("Tarnished");
+        user5Pro.setEmail("willibecometheeldenlord@email.com");
+        user5Pro.setPhone("567-890-0034");
+        user5.setProfile(user5Pro);
+        // Deleted
+        user5.setDeleted(false);
 
-		List<User> usersThatLiked = new ArrayList<User>();
-		usersThatLiked.add(user2);
-		tweet1.setUsersFromLike(userFollowersList);
+        // --- User 6 ---
+        // Credentials
+        Credentials deletedUserCred = new Credentials();
+        deletedUserCred.setUsername("DeletedUser");
+        deletedUserCred.setPassword("Password");
 
-		userRepository.saveAndFlush(user1);
+        User deletedUser = new User();
+        deletedUser.setCredentials(deletedUserCred);
 
-		tweetRepository.saveAndFlush(tweet1);
+        // Profile
+        Profile deletedUserPro = new Profile();
+        deletedUserPro.setFirstName("Deleted");
+        deletedUserPro.setLastName("User");
+        deletedUserPro.setEmail("Deleted@User.com");
+        deletedUserPro.setPhone("NULL");
+        deletedUser.setProfile(deletedUserPro);
+        // Deleted
+        deletedUser.setDeleted(true);
+        userRepository.saveAllAndFlush(Arrays.asList(user1, user2, user3, user4, user5, deletedUser));
 
-		hashtagRepository.saveAndFlush(hashtag1);
+        // ----- HASHTAGS -----
 
-		userRepository.saveAndFlush(user2);
+        Hashtag hashtag1 = new Hashtag();
+        hashtag1.setLabel("#eldenlord");
 
-	}
+        Hashtag hashtag2 = new Hashtag();
+        hashtag2.setLabel("#mario");
+
+        Hashtag hashtag3 = new Hashtag();
+        hashtag3.setLabel("#luigi");
+
+        Hashtag hashtag4 = new Hashtag();
+        hashtag4.setLabel("#whereiscortana");
+
+        hashtagRepository.saveAllAndFlush(Arrays.asList(hashtag1, hashtag2, hashtag3, hashtag4));
+
+//	    // ----- TWEETS -----
+        // --- Start Tweet 1 ---
+        Tweet tweet1 = new Tweet();
+        tweet1.setAuthor(user1);
+        tweet1.setDeleted(false);
+        tweet1.setContent("This is some content 1 tweet1 #eldenlord #mario");
+        tweet1.setHashtags(Arrays.asList(hashtag1, hashtag2));
+        tweet1.setMentionedUsers(Arrays.asList(user1, user2));
+        tweetRepository.saveAndFlush(tweet1);
+
+        // --- Start Tweet 2 ---
+        Tweet tweet2 = new Tweet();
+        tweet2.setAuthor(user1);
+        tweet2.setDeleted(false);
+        tweet2.setContent("This is some content 2 tweet2 #eldenlord #mario");
+        tweet2.setHashtags(Arrays.asList(hashtag1, hashtag2));
+        tweet2.setInReplyTo(tweet1);
+        tweetRepository.saveAndFlush(tweet2);
+
+        // --- Start Tweet 3 ---
+        Tweet tweet3 = new Tweet();
+        tweet3.setAuthor(user2);
+        tweet3.setDeleted(false);
+        // Set Content @PARAM String
+        tweet3.setContent("This is some content 3 tweet3 #luigi #whereiscortana");
+        tweet3.setHashtags(Arrays.asList(hashtag3, hashtag4));
+        tweet3.setInReplyTo(tweet2);
+        tweetRepository.saveAndFlush(tweet3);
+
+        // --- Start Tweet 4 ---
+        Tweet tweet4 = new Tweet();
+        tweet4.setAuthor(user2);
+        tweet4.setDeleted(false);
+        // Set Content @PARAM String
+        tweet4.setContent("This is some content 4 tweet4");
+        tweet4.setInReplyTo(tweet3);
+        tweetRepository.saveAndFlush(tweet4);
+
+        // --- Start Tweet 5 ---
+        Tweet tweet5 = new Tweet();
+        tweet5.setAuthor(user3);
+        tweet5.setDeleted(false);
+        // Set Content @PARAM String
+        tweet5.setContent("This is some content 5 tweet5");
+        tweet5.setMentionedUsers(Arrays.asList(user1, user2));
+        tweet5.setInReplyTo(tweet4);
+        tweetRepository.saveAndFlush(tweet5);
+
+        // --- Start Tweet 6 ---
+        Tweet tweet6 = new Tweet();
+        tweet6.setAuthor(user3);
+        tweet6.setDeleted(false);
+        // Set Content @PARAM String
+        tweet6.setRepostOf(tweet5);
+        tweet6.setMentionedUsers(Arrays.asList(user1, user2));
+        tweet6.setInReplyTo(tweet2);
+        tweetRepository.saveAndFlush(tweet6);
+
+        // --- Start Tweet 7 ---
+        Tweet deletedTweet = new Tweet();
+        deletedTweet.setAuthor(user3);
+        deletedTweet.setDeleted(true);
+        // Set Content @PARAM String
+        deletedTweet.setContent("This is a deleted tweet (User3) tweet7");
+        deletedTweet.setMentionedUsers(Arrays.asList(user1, user2));
+        tweetRepository.saveAndFlush(deletedTweet);
+
+        // ----- LIST of Tweets + Adding to User# -----
+        List<Tweet> user1Tweets = List.of(tweet1, tweet2);
+        user1.setTweets(user1Tweets);
+        userRepository.saveAndFlush(user1);
+
+        List<Tweet> user2Tweets = List.of(tweet3, tweet4);
+        user2.setTweets(user2Tweets);
+        userRepository.saveAndFlush(user2);
+
+        List<Tweet> user3Tweets = List.of(tweet5, tweet6);
+        user3.setTweets(user3Tweets);
+        userRepository.saveAndFlush(user3);
+
+        // ----- List of Liked Tweets -----
+        user1.setLikedTweets(user3Tweets);
+        userRepository.saveAndFlush(user1);
+
+        user2.setLikedTweets(user1Tweets);
+        user2.setLikedTweets(user2Tweets);
+        userRepository.saveAndFlush(user2);
+
+        user3.setLikedTweets(user2Tweets);
+        userRepository.saveAndFlush(user3);
+        
+        deletedUser.setLikedTweets(user2Tweets);
+        userRepository.saveAndFlush(deletedUser);
+
+        // ----- List of Following -----
+        List<User> followingList = List.of(user2, user3, user4);
+        user1.setFollowing(followingList);
+        userRepository.saveAndFlush(user1);
+        // ----- List of Followers -----
+        List<User> followersList = List.of(user3, user5);
+        user1.setFollowers(followersList);
+        userRepository.saveAndFlush(user1);
+
+        // ----- Tweet Mentions -----
+        Tweet mention1 = new Tweet();
+        mention1.setAuthor(user2);
+        mention1.setDeleted(false);
+        // Set Content @PARAM String
+        mention1.setContent("This is some content for tweet mention 1");
+        tweetRepository.saveAndFlush(mention1);
+
+        // Following
+        List<User> following_1 = List.of(user2, user3, user4, deletedUser);
+        user1.setFollowing(following_1);
+
+        List<User> followers_1 = List.of(user5, deletedUser);
+        user1.setFollowers(followers_1);
+        userRepository.saveAndFlush(user1);
+    }
 
 }
