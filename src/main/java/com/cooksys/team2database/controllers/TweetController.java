@@ -3,6 +3,8 @@ package com.cooksys.team2database.controllers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cooksys.team2database.services.TweetService;
+
 import lombok.AllArgsConstructor;
 
 @RestController
@@ -10,14 +12,6 @@ import lombok.AllArgsConstructor;
 @RequestMapping("/tweets")
 public class TweetController {
 	
-//	private TweetService tweetService;
-	
-//	@GetMapping
-//	public List<TweetResponseDto> getAllTweets(){
-//		return tweetService.getAllTweets();
-//		
-//	}
-	
-	
+	private final TweetService tweetService;
 
 }
