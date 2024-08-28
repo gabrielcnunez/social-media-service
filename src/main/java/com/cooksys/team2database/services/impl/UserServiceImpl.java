@@ -41,6 +41,14 @@ public class UserServiceImpl implements UserService {
 		return tweetMapper.tweetEntityToResponseDtos(user.getTweets());
 	}
 	
+	@Override
+	public List<UserResponseDto> getUserFollowers(String username) {
+		User user = getUser(username);
+		List<User> userFollowers = user.getFollowersList();
+		
+		return userMapper.entityToResponseDtos(userFollowers);
+	}
+	
 	private User getUser(String username) {
 		Optional<User> optionalUser = userRepository.findByCredentialsUsername(username);
 		if (optionalUser.isEmpty()) {
@@ -49,7 +57,5 @@ public class UserServiceImpl implements UserService {
 		
 		return optionalUser.get();
 	}
-
-	
 
 }
