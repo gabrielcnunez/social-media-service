@@ -3,6 +3,7 @@ package com.cooksys.team2database.mappers;
 import java.util.List;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 import com.cooksys.team2database.dtos.UserRequestDto;
 import com.cooksys.team2database.dtos.UserResponseDto;
@@ -15,6 +16,7 @@ public interface UserMapper {
 	
 	List<UserResponseDto> entityToResponseDtos (List<User> users);
 	
+	@Mapping(source = "credentials.username", target = "username")
 	UserResponseDto entityToResponseDto (User user);
 	
 	User requestDtoToEntity(UserRequestDto userRequestDto);
