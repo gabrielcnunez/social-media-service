@@ -48,6 +48,13 @@ public class UserServiceImpl implements UserService {
 		return userMapper.entityToResponseDtos(user.getFollowersList());
 	}
 	
+	@Override
+	public List<UserResponseDto> getUserFollowing(String username) {
+		User user = getUser(username);
+		
+		return userMapper.entityToResponseDtos(user.getFollowingList());
+	}
+	
 	private User getUser(String username) {
 		Optional<User> optionalUser = userRepository.findByCredentialsUsername(username);
 		if (optionalUser.isEmpty()) {
@@ -56,5 +63,6 @@ public class UserServiceImpl implements UserService {
 		
 		return optionalUser.get();
 	}
+
 
 }

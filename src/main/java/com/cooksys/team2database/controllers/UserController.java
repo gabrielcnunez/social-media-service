@@ -39,5 +39,10 @@ public class UserController {
 	public List<UserResponseDto> getUserFollowers(@PathVariable String username) {
 		return userService.getUserFollowers(username);
 	}
+	
+	@GetMapping("/@{username}/following")
+	public List<UserResponseDto> getUserFollowing(@PathVariable String username) {
+		return userService.getUserFollowing(username);
+	}
 
 }
