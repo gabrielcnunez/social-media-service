@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cooksys.team2database.dtos.TweetResponseDto;
 import com.cooksys.team2database.dtos.UserResponseDto;
 import com.cooksys.team2database.services.UserService;
 
@@ -27,6 +28,11 @@ public class UserController {
 	@GetMapping("/@{username}")
 	public UserResponseDto getUserByUsername(@PathVariable String username) {
 		return userService.getUserByUsername(username);
+	}
+	
+	@GetMapping("/@{username}/tweets")
+	public List<TweetResponseDto> getUserTweets(@PathVariable String username) {
+		return userService.getUserTweets(username);
 	}
 
 }
