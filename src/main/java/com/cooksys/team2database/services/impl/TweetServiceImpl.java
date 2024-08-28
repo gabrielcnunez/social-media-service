@@ -1,7 +1,9 @@
 package com.cooksys.team2database.services.impl;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
 
@@ -92,14 +94,29 @@ public class TweetServiceImpl implements TweetService {
 		Tweet currTweet = tweetRepository.getReferenceById(id).getInReplyTo();
 		List<Tweet> beforeTweets = new ArrayList<Tweet>();
 
-		// get reply chain before current tweet
+		// get reply chain before current tweet, excluding deleted tweets
 		while (currTweet != null) {
-			beforeTweets.add(currTweet);
+			if (!currTweet.isDeleted()) {
+				beforeTweets.add(currTweet);
+			}
 			currTweet = currTweet.getInReplyTo();
 		}
 
+		// get all replies of current tweet
 		List<Tweet> afterTweets = tweetRepository.getReferenceById(id).getReplies();
-//		getActiveTweets(afterTweets);
+		getActiveTweets(afterTweets);
+		// get the replies of replies of current tweet
+		// This was my interpretation of the instructions for this part. Not having an
+		// example output makes this a little hard to figure out
+		for (int i = 0; i < afterTweets.size(); i++) {
+			for (int j = 0; j < afterTweets.get(i).getReplies().size(); j++) {
+				if (!afterTweets.get(i).getReplies().get(j).isDeleted()) {
+					afterTweets.add(afterTweets.get(i).getReplies().get(j));
+				}
+			}
+		}
+		// chronological order
+		afterTweets.sort(Comparator.comparing(Tweet::getPosted));
 
 		ContextDto contextDto = new ContextDto();
 		contextDto.setTarget(tweetMapper.entityToDto(tweetRepository.getReferenceById(id)));
@@ -122,6 +139,9 @@ public class TweetServiceImpl implements TweetService {
 	// process the tweet's content for @{username} mentions and #{hashtag} tags.
 	// There is no way to create hashtags or create mentions from the API, so this
 	// must be handled automatically!
+	
+	// I'm guessing this is going to be using regex and will read through the
+	// content of a tweet during a post request.
 	@Override
 	public List<UserResponseDto> getUsersMentionedFromTweet(Long id) {
 		validateTweetId(id);

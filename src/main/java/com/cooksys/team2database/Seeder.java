@@ -196,7 +196,7 @@ public class Seeder implements CommandLineRunner {
         // --- Start Tweet 4 ---
         Tweet tweet4 = new Tweet();
         tweet4.setAuthor(user2);
-        tweet4.setDeleted(true);
+        tweet4.setDeleted(false);
         tweet4.setRepostOf(tweet2);
         // Set Content @PARAM String
         tweet4.setContent("This is some content 4 tweet4");
