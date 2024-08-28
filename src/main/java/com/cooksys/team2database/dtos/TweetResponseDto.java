@@ -13,7 +13,7 @@ public class TweetResponseDto {
 
 	private Long id;
 
-	private User author;
+	private UserResponseDto author;
 
 	private Timestamp posted;
 
