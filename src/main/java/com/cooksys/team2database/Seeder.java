@@ -95,16 +95,6 @@ public class Seeder implements CommandLineRunner {
         User user4 = new User();
         user4.setCredentials(user4Cred);
 
-        // Profile
-        Profile user4Pro = new Profile();
-        user4Pro.setFirstName("Nathan");
-        user4Pro.setLastName("Drake");
-        user4Pro.setEmail("nathan@email.com");
-        user4Pro.setPhone("456-789-0023");
-        user4.setProfile(user4Pro);
-        // Deleted
-        user4.setDeleted(false);
-
         // --- User 5 ---
         // Credentials
         Credentials user5Cred = new Credentials();
@@ -145,6 +135,7 @@ public class Seeder implements CommandLineRunner {
         userRepository.saveAllAndFlush(Arrays.asList(user1, user2, user3, user4, user5, deletedUser));
 
         // ----- HASHTAGS -----
+
 
         Hashtag hashtag1 = new Hashtag();
         hashtag1.setLabel("#eldenlord");

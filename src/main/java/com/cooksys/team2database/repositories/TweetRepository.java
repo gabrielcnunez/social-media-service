@@ -15,5 +15,4 @@ public interface TweetRepository extends JpaRepository<Tweet, Long> {
 	// find every tweet that is not deleted
 	List<Tweet> findByDeletedFalse();
 	
-
 }
