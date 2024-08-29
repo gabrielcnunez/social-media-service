@@ -1,5 +1,7 @@
 package com.cooksys.team2database.services.impl;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.cooksys.team2database.dtos.TweetResponseDto;
 import com.cooksys.team2database.dtos.UserResponseDto;
+import com.cooksys.team2database.entities.Tweet;
 import com.cooksys.team2database.entities.User;
 import com.cooksys.team2database.exceptions.NotFoundException;
 import com.cooksys.team2database.mappers.TweetMapper;
@@ -42,6 +45,18 @@ public class UserServiceImpl implements UserService {
 	}
 	
 	@Override
+	public List<TweetResponseDto> getUserFeed(String username) {
+		User user = getUser(username);
+		List<Tweet> userFeed = user.getTweets();
+		for (User u : user.getFollowingList()) {
+			userFeed.addAll(0, u.getTweets());
+		}
+		Collections.sort(userFeed, Comparator.comparing(Tweet::getPosted).reversed());
+		
+		return tweetMapper.tweetEntityToResponseDtos(userFeed);
+	}
+	
+	@Override
 	public List<UserResponseDto> getUserFollowers(String username) {
 		User user = getUser(username);
 		
@@ -63,6 +78,5 @@ public class UserServiceImpl implements UserService {
 		
 		return optionalUser.get();
 	}
-
 
 }

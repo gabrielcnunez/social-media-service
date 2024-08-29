@@ -91,6 +91,19 @@ public class Seeder implements CommandLineRunner {
 		user2.setJoined(joined);
 		user2.setCredentials(credentials2);
 		user2.setProfile(profile2);
+		
+//		create tweet 2
+		Tweet tweet2 = new Tweet();
+		long posted2 = date.getTime();
+
+		tweet2.setAuthor(user2);
+		tweet2.setPosted(posted2);
+		tweet2.setContent("simple tweet, user2's tweet1");
+		
+//		add tweets list to user
+		List<Tweet> tweetsFromUser2 = new ArrayList<Tweet>();
+		tweetsFromUser.add(tweet2);
+		user2.setTweets(tweetsFromUser2);		
 
 //		user 2 follows user 1, update follow and followers list 
 //		for both users
@@ -118,6 +131,8 @@ public class Seeder implements CommandLineRunner {
 		hashtagRepository.saveAndFlush(hashtag1);
 
 		userRepository.saveAndFlush(user2);
+		
+		tweetRepository.saveAndFlush(tweet2);
 
 	}
 
