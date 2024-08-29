@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cooksys.team2database.dtos.HashtagDto;
 import com.cooksys.team2database.dtos.TweetResponseDto;
 import com.cooksys.team2database.services.HashtagService;
 
@@ -21,7 +22,7 @@ public class HashtagController {
 
 	// get tags 
 	@GetMapping
-	public List<String> getAllHashTags(){
+	public List<HashtagDto> getAllHashTags(){
 		return hashtagService.getAllHashtags();
 	}
 	
