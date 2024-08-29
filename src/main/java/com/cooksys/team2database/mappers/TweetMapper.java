@@ -7,6 +7,7 @@ import org.mapstruct.Mapper;
 import com.cooksys.team2database.dtos.ContextDto;
 import com.cooksys.team2database.dtos.TweetRequestDto;
 import com.cooksys.team2database.dtos.TweetResponseDto;
+import com.cooksys.team2database.entities.Hashtag;
 import com.cooksys.team2database.entities.Tweet;
 import com.cooksys.team2database.entities.User;
 

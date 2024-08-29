@@ -164,7 +164,9 @@ public class Seeder implements CommandLineRunner {
         // --- Start Tweet 1 ---
         Tweet tweet1 = new Tweet();
         tweet1.setAuthor(user1);
+        
         tweet1.setDeleted(false);
+        
         tweet1.setContent("This is some content 1 tweet1 #eldenlord #mario");
         tweet1.setHashtags(Arrays.asList(hashtag1, hashtag2));
         tweet1.setMentionedUsers(Arrays.asList(user1, user2));
@@ -173,7 +175,9 @@ public class Seeder implements CommandLineRunner {
         // --- Start Tweet 2 ---
         Tweet tweet2 = new Tweet();
         tweet2.setAuthor(user1);
+        
         tweet2.setDeleted(false);
+        
         tweet2.setContent("This is some content 2 tweet2 #eldenlord #mario");
         tweet2.setHashtags(Arrays.asList(hashtag1, hashtag2));
         tweet2.setInReplyTo(tweet1);
@@ -188,11 +192,12 @@ public class Seeder implements CommandLineRunner {
         tweet3.setHashtags(Arrays.asList(hashtag3, hashtag4));
         tweet3.setInReplyTo(tweet2);
         tweetRepository.saveAndFlush(tweet3);
-
+        
         // --- Start Tweet 4 ---
         Tweet tweet4 = new Tweet();
         tweet4.setAuthor(user2);
         tweet4.setDeleted(false);
+        tweet4.setRepostOf(tweet2);
         // Set Content @PARAM String
         tweet4.setContent("This is some content 4 tweet4");
         tweet4.setInReplyTo(tweet3);
@@ -201,7 +206,9 @@ public class Seeder implements CommandLineRunner {
         // --- Start Tweet 5 ---
         Tweet tweet5 = new Tweet();
         tweet5.setAuthor(user3);
+        
         tweet5.setDeleted(false);
+        
         // Set Content @PARAM String
         tweet5.setContent("This is some content 5 tweet5");
         tweet5.setMentionedUsers(Arrays.asList(user1, user2));
@@ -223,6 +230,7 @@ public class Seeder implements CommandLineRunner {
         deletedTweet.setAuthor(user3);
         deletedTweet.setDeleted(true);
         // Set Content @PARAM String
+        deletedTweet.setInReplyTo(tweet3);
         deletedTweet.setContent("This is a deleted tweet (User3) tweet7");
         deletedTweet.setMentionedUsers(Arrays.asList(user1, user2));
         tweetRepository.saveAndFlush(deletedTweet);
