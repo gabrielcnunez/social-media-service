@@ -13,7 +13,7 @@ import com.cooksys.team2database.entities.User;
 public interface UserMapper {
 	
 	@Mapping(target = "username", source = "credentials.username")
-    UserResponseDto entityToDto(User user);
+    UserResponseDto entityToResponseDto(User user);
 
     User responseDtoToEntity(UserResponseDto userResponseDto);
 

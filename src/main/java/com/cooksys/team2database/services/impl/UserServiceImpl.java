@@ -43,33 +43,33 @@ public class UserServiceImpl implements UserService {
 		List<Tweet> userTweets = user.getTweets();
 		sortTweets(userTweets);
 		
-		return tweetMapper.tweetEntityToResponseDtos(userTweets);
+		return tweetMapper.entitiesToDtos(userTweets);
 	}
 	
 	@Override
 	public List<TweetResponseDto> getUserFeed(String username) {
 		User user = getUser(username);
 		List<Tweet> userFeed = user.getTweets();
-		for (User u : user.getFollowingList()) {
+		for (User u : user.getFollowing()) {
 			userFeed.addAll(0, u.getTweets());
 		}
 		sortTweets(userFeed);
 		
-		return tweetMapper.tweetEntityToResponseDtos(userFeed);
+		return tweetMapper.entitiesToDtos(userFeed);
 	}
 	
 	@Override
 	public List<UserResponseDto> getUserFollowers(String username) {
 		User user = getUser(username);
 		
-		return userMapper.entityToResponseDtos(user.getFollowersList());
+		return userMapper.entityToResponseDtos(user.getFollowers());
 	}
 	
 	@Override
 	public List<UserResponseDto> getUserFollowing(String username) {
 		User user = getUser(username);
 		
-		return userMapper.entityToResponseDtos(user.getFollowingList());
+		return userMapper.entityToResponseDtos(user.getFollowing());
 	}
 	
 	private User getUser(String username) {

@@ -132,7 +132,7 @@ public class TweetServiceImpl implements TweetService {
 		List<User> likedByUsers = tweetRepository.getReferenceById(id).getLikedByUsers();
 		getActiveUsers(likedByUsers);
 
-		return userMapper.entitiesToDtos(likedByUsers);
+		return userMapper.entityToResponseDtos(likedByUsers);
 	}
 
 	// TODO: IMPORTANT: when a tweet with content is created, the server must
@@ -148,7 +148,7 @@ public class TweetServiceImpl implements TweetService {
 		List<User> mentionsInTweet = tweetRepository.getReferenceById(id).getMentionedUsers();
 		getActiveUsers(mentionsInTweet);
 
-		return userMapper.entitiesToDtos(mentionsInTweet);
+		return userMapper.entityToResponseDtos(mentionsInTweet);
 	}
 
 	@Override
