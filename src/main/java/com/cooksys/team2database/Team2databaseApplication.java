@@ -8,6 +8,8 @@ public class Team2databaseApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(Team2databaseApplication.class, args);
+		
 	}
 
 }
+

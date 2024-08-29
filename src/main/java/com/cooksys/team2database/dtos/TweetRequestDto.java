@@ -1,7 +1,5 @@
 package com.cooksys.team2database.dtos;
 
-import com.cooksys.team2database.entities.Credentials;
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +9,6 @@ public class TweetRequestDto {
 	
 	private String content;
 	
-	private Credentials credentials;
+	private CredentialsDto credentials;
 
 }

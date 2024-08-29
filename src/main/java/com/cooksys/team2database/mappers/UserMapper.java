@@ -9,15 +9,16 @@ import com.cooksys.team2database.dtos.UserRequestDto;
 import com.cooksys.team2database.dtos.UserResponseDto;
 import com.cooksys.team2database.entities.User;
 
-// might use:  uses = { xxxMapper.class }
-// tweet might contain user, convert to dto through cascade?
 @Mapper(componentModel = "spring", uses = { CredentialsMapper.class, ProfileMapper.class })
 public interface UserMapper {
 	
-	List<UserResponseDto> entityToResponseDtos (List<User> users);
-	
-	@Mapping(source = "credentials.username", target = "username")
-	UserResponseDto entityToResponseDto (User user);
-	
-	User requestDtoToEntity(UserRequestDto userRequestDto);
+	@Mapping(target = "username", source = "credentials.username")
+    UserResponseDto entityToDto(User user);
+
+    User responseDtoToEntity(UserResponseDto userResponseDto);
+
+    User requestDtoToEntity(UserRequestDto userRequestDto);
+
+    List<UserResponseDto> entityToResponseDtos(List<User> users);
+
 }

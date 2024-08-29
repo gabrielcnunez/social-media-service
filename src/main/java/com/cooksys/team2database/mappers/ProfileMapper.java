@@ -8,6 +8,8 @@ import com.cooksys.team2database.entities.Profile;
 @Mapper(componentModel = "spring")
 public interface ProfileMapper {
 	
-	Profile DtoToEntity(ProfileDto profileDto);
+	ProfileDto entityToDto(Profile entity);
+
+    Profile requestDtoToEntity(ProfileDto profileDto);
 
 }

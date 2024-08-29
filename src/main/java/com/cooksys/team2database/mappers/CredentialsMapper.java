@@ -8,6 +8,8 @@ import com.cooksys.team2database.entities.Credentials;
 @Mapper(componentModel = "spring")
 public interface CredentialsMapper {
 	
-	Credentials requestDtoToEntity(CredentialsDto credentialsDto);
+	CredentialsDto entityToDto(Credentials credentials);
+
+    Credentials dtoToEntity(CredentialsDto dto);
 	
 }

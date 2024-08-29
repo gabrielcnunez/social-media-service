@@ -1,5 +1,7 @@
 package com.cooksys.team2database.dtos;
 
+import java.sql.Timestamp;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,8 +11,8 @@ public class HashtagDto {
 	
 	  private String label;
 	  
-	  private Long firstUsed;
+	  private Timestamp firstUsed;
 	  
-	  private Long lastUsed;
+	  private Timestamp lastUsed;
 	  
 }

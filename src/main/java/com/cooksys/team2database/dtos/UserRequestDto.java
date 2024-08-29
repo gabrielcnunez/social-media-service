@@ -1,8 +1,5 @@
 package com.cooksys.team2database.dtos;
 
-import com.cooksys.team2database.entities.Credentials;
-import com.cooksys.team2database.entities.Profile;
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
 //might needs an AllArgu annotation possibly in one of the Dtos
@@ -10,8 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 public class UserRequestDto {
 	
-	private Credentials credentials;
+	private CredentialsDto credentials;
 	
-	private Profile profile;
+	private ProfileDto profile;
 
 }
