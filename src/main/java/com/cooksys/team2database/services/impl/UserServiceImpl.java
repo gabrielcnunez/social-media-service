@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
 	public List<TweetResponseDto> getUserTweets(String username) {
 		User user = getUser(username);
 		List<Tweet> userTweets = user.getTweets();
-		Collections.sort(userTweets, Comparator.comparing(Tweet::getPosted).reversed());
+		sortTweets(userTweets);
 		
 		return tweetMapper.tweetEntityToResponseDtos(userTweets);
 	}
@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
 		for (User u : user.getFollowingList()) {
 			userFeed.addAll(0, u.getTweets());
 		}
-		Collections.sort(userFeed, Comparator.comparing(Tweet::getPosted).reversed());
+		sortTweets(userFeed);
 		
 		return tweetMapper.tweetEntityToResponseDtos(userFeed);
 	}
@@ -79,6 +79,10 @@ public class UserServiceImpl implements UserService {
 		}
 		
 		return optionalUser.get();
+	}
+	
+	private void sortTweets(List<Tweet> tweets) {
+		Collections.sort(tweets, Comparator.comparing(Tweet::getPosted).reversed());
 	}
 
 }
