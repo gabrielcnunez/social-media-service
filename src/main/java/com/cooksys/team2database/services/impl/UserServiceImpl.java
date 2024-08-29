@@ -40,8 +40,10 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public List<TweetResponseDto> getUserTweets(String username) {
 		User user = getUser(username);
+		List<Tweet> userTweets = user.getTweets();
+		Collections.sort(userTweets, Comparator.comparing(Tweet::getPosted).reversed());
 		
-		return tweetMapper.tweetEntityToResponseDtos(user.getTweets());
+		return tweetMapper.tweetEntityToResponseDtos(userTweets);
 	}
 	
 	@Override
