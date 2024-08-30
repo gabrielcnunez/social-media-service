@@ -1,5 +1,6 @@
 package com.cooksys.team2database.services.impl;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -207,70 +208,75 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserResponseDto updateUser(String username, UserRequestDto userRequestDto) {
-		// Retrieve the user by username
-		User user = getUser(username);
+	    // Retrieve the user by username
+	    User user = getUser(username);
 
-		// Verify the provided credentials match the user's current credentials
-		if (!user.getCredentials().getUsername().equals(userRequestDto.getCredentials().getUsername())
-				|| !user.getCredentials().getPassword().equals(userRequestDto.getCredentials().getPassword())) {
-			throw new BadRequestException("Invalid credentials");
-		}
+	    // Validate credentials
+	    if (userRequestDto.getCredentials() == null) {
+	        throw new BadRequestException("Credentials must be provided");
+	    }
+	    
+	    // Verify the provided credentials match the user's current credentials
+	    if (!user.getCredentials().getUsername().equals(userRequestDto.getCredentials().getUsername())
+	            || !user.getCredentials().getPassword().equals(userRequestDto.getCredentials().getPassword())) {
+	        throw new BadRequestException("Invalid credentials");
+	    }
 
-		// Check if profile update is requested
-		if (userRequestDto.getProfile() != null) {
-			Profile userProfile = user.getProfile();
-			ProfileDto newProfileDto = userRequestDto.getProfile();
+	    // Check if profile update is requested
+	    if (userRequestDto.getProfile() != null) {
+	        Profile userProfile = user.getProfile();
+	        ProfileDto newProfileDto = userRequestDto.getProfile();
 
-			// Update profile fields if new values are provided
-			if (newProfileDto.getFirstName() != null) {
-				userProfile.setFirstName(newProfileDto.getFirstName());
-			}
-			if (newProfileDto.getLastName() != null) {
-				userProfile.setLastName(newProfileDto.getLastName());
-			}
-			if (newProfileDto.getEmail() != null) {
-				userProfile.setEmail(newProfileDto.getEmail());
-			}
-			if (newProfileDto.getPhone() != null) {
-				userProfile.setPhone(newProfileDto.getPhone());
-			}
-		}
+	        // Update profile fields if new values are provided
+	        if (newProfileDto.getFirstName() != null) {
+	            userProfile.setFirstName(newProfileDto.getFirstName());
+	        }
+	        if (newProfileDto.getLastName() != null) {
+	            userProfile.setLastName(newProfileDto.getLastName());
+	        }
+	        if (newProfileDto.getEmail() != null) {
+	            userProfile.setEmail(newProfileDto.getEmail());
+	        }
+	        if (newProfileDto.getPhone() != null) {
+	            userProfile.setPhone(newProfileDto.getPhone());
+	        }
+	    } else {
+	        throw new BadRequestException("Profile must be provided for update");
+	    }
 
-		// Save the updated user to the database and flush changes
-		User updatedUser = userRepository.saveAndFlush(user);
+	    // Save the updated user to the database and flush changes
+	    User updatedUser = userRepository.saveAndFlush(user);
 
-		// Convert the updated user entity to a DTO and return it
-		return userMapper.entityToResponseDto(updatedUser);
+	    // Convert the updated user entity to a DTO and return it
+	    return userMapper.entityToResponseDto(updatedUser);
 	}
 	
 
 	@Override
 	public void unfollowUser(String usernameToUnfollow, CredentialsDto credentials) {
-		// Retrieve the user to unfollow
-		User userToUnfollow = getUser(usernameToUnfollow);
+	    // Retrieve the user to unfollow
+	    User userToUnfollow = getUser(usernameToUnfollow);
 
-		// Find the follower user by their username
-		User follower = userRepository.findByCredentialsUsername(credentials.getUsername())
-				.orElseThrow(() -> new BadRequestException("Invalid credentials"));
+	    // Find the follower user by their username
+	    User follower = userRepository.findByCredentialsUsername(credentials.getUsername())
+	            .orElseThrow(() -> new BadRequestException("Invalid credentials"));
 
-		// Verify the follower's password
-		if (!follower.getCredentials().getPassword().equals(credentials.getPassword())) {
-			throw new BadRequestException("Invalid credentials");
-		}
+	    // Verify the follower's password
+	    if (!follower.getCredentials().getPassword().equals(credentials.getPassword())) {
+	        throw new BadRequestException("Invalid credentials");
+	    }
 
-		// Check if the follower is actually following the user
-		if (!follower.getFollowing().contains(userToUnfollow)) {
-			throw new BadRequestException("Not following this user");
-		}
+	    // Check if the follower is actually following the user
+	    if (!follower.getFollowing().contains(userToUnfollow)) {
+	        throw new BadRequestException("Not following this user");
+	    }
 
-		// Remove the userToUnfollow from the follower's following list and remove the
-		// follower from the userToUnfollow's followers list
-		follower.getFollowing().remove(userToUnfollow);
-		userToUnfollow.getFollowers().remove(follower);
+	    // Remove the userToUnfollow from the follower's following list and remove the follower from the userToUnfollow's followers list
+	    follower.getFollowing().remove(userToUnfollow);
+	    userToUnfollow.getFollowers().remove(follower);
 
-		// Save the updated follow and unfollow database
-		userRepository.save(follower);
-		userRepository.save(userToUnfollow);
+	    // Save both updated users in a single transaction
+	    userRepository.saveAll(Arrays.asList(follower, userToUnfollow));
 	}
 
 }
