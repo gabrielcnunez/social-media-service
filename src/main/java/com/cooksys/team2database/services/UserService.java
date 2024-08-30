@@ -2,7 +2,9 @@ package com.cooksys.team2database.services;
 
 import java.util.List;
 
+import com.cooksys.team2database.dtos.CredentialsDto;
 import com.cooksys.team2database.dtos.TweetResponseDto;
+import com.cooksys.team2database.dtos.UserRequestDto;
 import com.cooksys.team2database.dtos.UserResponseDto;
 
 public interface UserService {
@@ -18,5 +20,11 @@ public interface UserService {
 	List<UserResponseDto> getUserFollowers(String username);
 
 	List<UserResponseDto> getUserFollowing(String username);
+
+	UserResponseDto createUser(UserRequestDto userRequestDto);
+
+	void followUser(String username, CredentialsDto credentialsDto);
+
+	UserResponseDto deleteUser(String username, CredentialsDto credentialsDto);
 
 }
