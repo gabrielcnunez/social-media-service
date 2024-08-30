@@ -28,4 +28,6 @@ public interface TweetService {
 
 	TweetResponseDto postTweet(TweetRequestDto tweetRequestDto);
 
+	TweetResponseDto postReply(Long id, TweetRequestDto tweetRequestDto);
+
 }

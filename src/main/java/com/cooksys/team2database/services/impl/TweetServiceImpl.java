@@ -20,6 +20,7 @@ import com.cooksys.team2database.entities.Credentials;
 import com.cooksys.team2database.entities.Hashtag;
 import com.cooksys.team2database.entities.Tweet;
 import com.cooksys.team2database.entities.User;
+import com.cooksys.team2database.exceptions.BadRequestException;
 import com.cooksys.team2database.exceptions.NotFoundException;
 import com.cooksys.team2database.mappers.HashtagMapper;
 import com.cooksys.team2database.mappers.TweetMapper;
@@ -201,6 +202,20 @@ public class TweetServiceImpl implements TweetService {
 		tweetToPost.setAuthor(validUser);
 		
 		return tweetMapper.entityToDto(tweetRepository.saveAndFlush(tweetToPost));
+	}
+
+	@Override
+	public TweetResponseDto postReply(Long id, TweetRequestDto tweetRequestDto) {
+		validateTweetId(id);
+		if (tweetRequestDto.getContent().isEmpty()) {
+			throw new BadRequestException("Reply cannot be blank");
+		}
+		User validUser = validUser(tweetRequestDto);
+		Tweet replyToPost = tweetMapper.requestDtoToEntity(tweetRequestDto);
+		replyToPost.setAuthor(validUser);
+		replyToPost.setInReplyTo(tweetRepository.getReferenceById(id));
+		
+		return tweetMapper.entityToDto(tweetRepository.saveAndFlush(replyToPost));
 	}
 
 }
