@@ -197,6 +197,9 @@ public class TweetServiceImpl implements TweetService {
 
 	@Override
 	public TweetResponseDto postTweet(TweetRequestDto tweetRequestDto) {
+		if (tweetRequestDto.getContent().isEmpty()) {
+			throw new BadRequestException("Reply cannot be blank");
+		}
 		User validUser = validUser(tweetRequestDto);
 		Tweet tweetToPost = tweetMapper.requestDtoToEntity(tweetRequestDto);
 		tweetToPost.setAuthor(validUser);
