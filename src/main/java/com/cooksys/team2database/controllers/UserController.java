@@ -2,19 +2,26 @@ package com.cooksys.team2database.controllers;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cooksys.team2database.dtos.CredentialsDto;
 import com.cooksys.team2database.dtos.TweetResponseDto;
+import com.cooksys.team2database.dtos.UserRequestDto;
 import com.cooksys.team2database.dtos.UserResponseDto;
 import com.cooksys.team2database.services.UserService;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 
 @RestController
-@RequiredArgsConstructor
+@AllArgsConstructor
 @RequestMapping("/users")
 public class UserController {
 	
@@ -48,6 +55,22 @@ public class UserController {
 	@GetMapping("/@{username}/following")
 	public List<UserResponseDto> getUserFollowing(@PathVariable String username) {
 		return userService.getUserFollowing(username);
+	}
+	
+	@PostMapping
+	@ResponseStatus(HttpStatus.CREATED)
+	public UserResponseDto createUser(@RequestBody UserRequestDto userRequestDto) {
+		return userService.createUser(userRequestDto);
+	}
+	
+	@PostMapping("/@{username}/follow")
+	public void followUser(@PathVariable String username, @RequestBody CredentialsDto credentialsDto) {
+		userService.followUser(username, credentialsDto);
+	}
+	
+	@DeleteMapping("/@{username}")
+	public UserResponseDto deleteUser(@PathVariable String username, @RequestBody CredentialsDto credentialsDto) {
+		return userService.deleteUser(username, credentialsDto);
 	}
 
 }
