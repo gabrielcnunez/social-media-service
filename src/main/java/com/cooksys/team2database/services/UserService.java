@@ -21,15 +21,17 @@ public interface UserService {
 
 	List<UserResponseDto> getUserFollowing(String username);
 	
+	// TODO: error check for  no credentials and no profile
 	UserResponseDto updateUser(String username, UserRequestDto userRequestDto);
 	
+	// TODO: error check for  no credentials and no profile
     void unfollowUser(String usernameToUnfollow, CredentialsDto credentials);
-
 
 	UserResponseDto createUser(UserRequestDto userRequestDto);
 
 	void followUser(String username, CredentialsDto credentialsDto);
 
+	// retest when user is deleted then re-added with same credentials
 	UserResponseDto deleteUser(String username, CredentialsDto credentialsDto);
 
 }

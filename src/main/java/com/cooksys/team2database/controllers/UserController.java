@@ -25,59 +25,60 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 @RequestMapping("/users")
 public class UserController {
-	
+
 	private final UserService userService;
-	
+
 	@GetMapping
 	public List<UserResponseDto> getAllUsers() {
 		return userService.getAllUsers();
 	}
-	
+
 	@GetMapping("/@{username}")
 	public UserResponseDto getUserByUsername(@PathVariable String username) {
 		return userService.getUserByUsername(username);
 	}
-	
+
 	@GetMapping("/@{username}/tweets")
 	public List<TweetResponseDto> getUserTweets(@PathVariable String username) {
 		return userService.getUserTweets(username);
 	}
-	
+
 	@GetMapping("/@{username}/feed")
 	public List<TweetResponseDto> getUserFeed(@PathVariable String username) {
 		return userService.getUserFeed(username);
 	}
-	
+
 	@GetMapping("/@{username}/followers")
 	public List<UserResponseDto> getUserFollowers(@PathVariable String username) {
 		return userService.getUserFollowers(username);
 	}
-	
+
 	@GetMapping("/@{username}/following")
 	public List<UserResponseDto> getUserFollowing(@PathVariable String username) {
 		return userService.getUserFollowing(username);
 	}
-  
+
 	@PatchMapping("/@{username}")
-    public UserResponseDto updateUser(@PathVariable String username, @RequestBody UserRequestDto userRequestDto) {
-        return userService.updateUser(username, userRequestDto);
-    }
-	
+	public UserResponseDto updateUser(@PathVariable String username, @RequestBody UserRequestDto userRequestDto) {
+		return userService.updateUser(username, userRequestDto);
+	}
+
 	@DeleteMapping("/@{username}")
 	public UserResponseDto deleteUser(@PathVariable String username, @RequestBody CredentialsDto credentialsDto) {
 		return userService.deleteUser(username, credentialsDto);
 
-	}  
- 
-  @PostMapping("/@{username}/follow")
+	}
+
+	@PostMapping("/@{username}/follow")
 	public void followUser(@PathVariable String username, @RequestBody CredentialsDto credentialsDto) {
 		userService.followUser(username, credentialsDto);
 	}
-  
+
 	@PostMapping("/{username}/unfollow")
 	public void unfollowUser(@PathVariable String username, @RequestBody CredentialsDto credentials) {
-	    userService.unfollowUser(username, credentials);
-	
+		userService.unfollowUser(username, credentials);
+	}
+
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public UserResponseDto createUser(@RequestBody UserRequestDto userRequestDto) {

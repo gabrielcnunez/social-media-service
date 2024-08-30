@@ -106,7 +106,7 @@ public class UserServiceImpl implements UserService {
 
 		return tweetMapper.entitiesToDtos(userFeed);
 	}
-
+	
 	@Override
 	public List<UserResponseDto> getUserFollowers(String username) {
 		User user = getUser(username);
@@ -145,6 +145,7 @@ public class UserServiceImpl implements UserService {
 
 	// this can definitely be cleaned up
 	// possible redundancy in the error checks?
+	
 	@Override
 	public void followUser(String username, CredentialsDto credentialsDto) {
 		validateCredentials(credentialsMapper.dtoToEntity(credentialsDto));
@@ -202,80 +203,74 @@ public class UserServiceImpl implements UserService {
 
 		return userMapper.entityToResponseDto(userRepository.saveAndFlush(userToDelete.get()));
 	}
-  
-      @Override
-    public UserResponseDto updateUser(String username, UserRequestDto userRequestDto) {
-        // Retrieve the user by username
-        User user = getUser(username);
+	
 
-        // Verify the provided credentials match the user's current credentials
-        if (!user.getCredentials().getUsername().equals(userRequestDto.getCredentials().getUsername()) ||
-            !user.getCredentials().getPassword().equals(userRequestDto.getCredentials().getPassword())) {
-            throw new BadRequestException("Invalid credentials");
-        }
+	@Override
+	public UserResponseDto updateUser(String username, UserRequestDto userRequestDto) {
+		// Retrieve the user by username
+		User user = getUser(username);
 
-        // Check if profile update is requested
-        if (userRequestDto.getProfile() != null) {
-            Profile userProfile = user.getProfile();
-            ProfileDto newProfileDto = userRequestDto.getProfile();
+		// Verify the provided credentials match the user's current credentials
+		if (!user.getCredentials().getUsername().equals(userRequestDto.getCredentials().getUsername())
+				|| !user.getCredentials().getPassword().equals(userRequestDto.getCredentials().getPassword())) {
+			throw new BadRequestException("Invalid credentials");
+		}
 
-            // Update profile fields if new values are provided
-            if (newProfileDto.getFirstName() != null) {
-                userProfile.setFirstName(newProfileDto.getFirstName());
-            }
-            if (newProfileDto.getLastName() != null) {
-                userProfile.setLastName(newProfileDto.getLastName());
-            }
-            if (newProfileDto.getEmail() != null) {
-                userProfile.setEmail(newProfileDto.getEmail());
-            }
-            if (newProfileDto.getPhone() != null) {
-                userProfile.setPhone(newProfileDto.getPhone());
-            }
-        }
+		// Check if profile update is requested
+		if (userRequestDto.getProfile() != null) {
+			Profile userProfile = user.getProfile();
+			ProfileDto newProfileDto = userRequestDto.getProfile();
 
-        // Save the updated user to the database and flush changes
-        User updatedUser = userRepository.saveAndFlush(user);
+			// Update profile fields if new values are provided
+			if (newProfileDto.getFirstName() != null) {
+				userProfile.setFirstName(newProfileDto.getFirstName());
+			}
+			if (newProfileDto.getLastName() != null) {
+				userProfile.setLastName(newProfileDto.getLastName());
+			}
+			if (newProfileDto.getEmail() != null) {
+				userProfile.setEmail(newProfileDto.getEmail());
+			}
+			if (newProfileDto.getPhone() != null) {
+				userProfile.setPhone(newProfileDto.getPhone());
+			}
+		}
 
-        // Convert the updated user entity to a DTO and return it
-        return userMapper.entityToResponseDto(updatedUser);
-    }
-    
-    @Override
-    public void unfollowUser(String usernameToUnfollow, CredentialsDto credentials) {
-        // Retrieve the user to unfollow
-        User userToUnfollow = getUser(usernameToUnfollow);
+		// Save the updated user to the database and flush changes
+		User updatedUser = userRepository.saveAndFlush(user);
 
-        // Find the follower user by their username
-        User follower = userRepository.findByCredentialsUsername(credentials.getUsername())
-            .orElseThrow(() -> new BadRequestException("Invalid credentials"));
+		// Convert the updated user entity to a DTO and return it
+		return userMapper.entityToResponseDto(updatedUser);
+	}
+	
 
-        // Verify the follower's password
-        if (!follower.getCredentials().getPassword().equals(credentials.getPassword())) {
-            throw new BadRequestException("Invalid credentials");
-        }
+	@Override
+	public void unfollowUser(String usernameToUnfollow, CredentialsDto credentials) {
+		// Retrieve the user to unfollow
+		User userToUnfollow = getUser(usernameToUnfollow);
 
-        // Check if the follower is actually following the user
-        if (!follower.getFollowing().contains(userToUnfollow)) {
-            throw new BadRequestException("Not following this user");
-        }
+		// Find the follower user by their username
+		User follower = userRepository.findByCredentialsUsername(credentials.getUsername())
+				.orElseThrow(() -> new BadRequestException("Invalid credentials"));
 
-        // Remove the userToUnfollow from the follower's following list and remove the follower from the userToUnfollow's followers list
-        follower.getFollowing().remove(userToUnfollow);
-        userToUnfollow.getFollowers().remove(follower);
+		// Verify the follower's password
+		if (!follower.getCredentials().getPassword().equals(credentials.getPassword())) {
+			throw new BadRequestException("Invalid credentials");
+		}
 
-        // Save the updated  follow and unfollow database
-        userRepository.save(follower);
-        userRepository.save(userToUnfollow);
-    }
+		// Check if the follower is actually following the user
+		if (!follower.getFollowing().contains(userToUnfollow)) {
+			throw new BadRequestException("Not following this user");
+		}
 
-    private User getUser(String username) {
-        return userRepository.findByCredentialsUsername(username)
-            .orElseThrow(() -> new NotFoundException("No user found with username: @" + username));
-    }
+		// Remove the userToUnfollow from the follower's following list and remove the
+		// follower from the userToUnfollow's followers list
+		follower.getFollowing().remove(userToUnfollow);
+		userToUnfollow.getFollowers().remove(follower);
 
-    private void sortTweets(List<Tweet> tweets) {
-        Collections.sort(tweets, Comparator.comparing(Tweet::getPosted).reversed());
-    }
+		// Save the updated follow and unfollow database
+		userRepository.save(follower);
+		userRepository.save(userToUnfollow);
+	}
 
 }
