@@ -152,7 +152,6 @@ public class UserServiceImpl implements UserService {
 		doesUserExist(follower);
 
 		Optional<User> followed = userRepository.findByCredentialsUsername(username);
-		validateCredentials(followed.get().getCredentials());
 		doesUserExist(followed);
 
 		// if the following relationship already exists
@@ -187,7 +186,7 @@ public class UserServiceImpl implements UserService {
 		doesUserExist(userToDelete);
 
 		// check if the provided credentials match the user
-		if (userToDelete.get().getCredentials().getUsername() != username) {
+		if (userToDelete.get().getCredentials().getUsername().equals(username)) {
 			throw new BadRequestException("Username credentials mismatch!");
 		}
 
