@@ -24,14 +24,14 @@ public interface UserService {
 	// TODO: error check for  no credentials and no profile
 	UserResponseDto updateUser(String username, UserRequestDto userRequestDto);
 	
-	// TODO: error check for  no credentials and no profile
+	// TODO: user 2 unfollows first user then refollows (fails)
     void unfollowUser(String usernameToUnfollow, CredentialsDto credentials);
 
 	UserResponseDto createUser(UserRequestDto userRequestDto);
 
 	void followUser(String username, CredentialsDto credentialsDto);
 
-	// retest when user is deleted then re-added with same credentials
+	// TODO: retest when user is deleted then re-added with same credentials (flip boolean isDeleted())
 	UserResponseDto deleteUser(String username, CredentialsDto credentialsDto);
 
 }
