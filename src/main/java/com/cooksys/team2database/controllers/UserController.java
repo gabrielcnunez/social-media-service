@@ -2,12 +2,18 @@ package com.cooksys.team2database.controllers;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cooksys.team2database.dtos.CredentialsDto;
 import com.cooksys.team2database.dtos.TweetResponseDto;
+import com.cooksys.team2database.dtos.UserRequestDto;
 import com.cooksys.team2database.dtos.UserResponseDto;
 import com.cooksys.team2database.services.UserService;
 
@@ -48,6 +54,15 @@ public class UserController {
 	@GetMapping("/@{username}/following")
 	public List<UserResponseDto> getUserFollowing(@PathVariable String username) {
 		return userService.getUserFollowing(username);
+	}
+	@PatchMapping("/@{username}")
+    public UserResponseDto updateUser(@PathVariable String username, @RequestBody UserRequestDto userRequestDto) {
+        return userService.updateUser(username, userRequestDto);
+    }
+	
+	@PostMapping("/{username}/unfollow")
+	public void unfollowUser(@PathVariable String username, @RequestBody CredentialsDto credentials) {
+	    userService.unfollowUser(username, credentials);
 	}
 
 }

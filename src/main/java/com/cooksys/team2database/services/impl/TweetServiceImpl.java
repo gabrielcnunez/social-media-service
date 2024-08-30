@@ -6,23 +6,29 @@ import java.util.Comparator;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import com.cooksys.team2database.dtos.ContextDto;
+import com.cooksys.team2database.dtos.CredentialsDto;
 import com.cooksys.team2database.dtos.HashtagDto;
 import com.cooksys.team2database.dtos.TweetResponseDto;
 import com.cooksys.team2database.dtos.UserResponseDto;
 import com.cooksys.team2database.entities.Hashtag;
 import com.cooksys.team2database.entities.Tweet;
 import com.cooksys.team2database.entities.User;
+import com.cooksys.team2database.exceptions.BadRequestException;
 import com.cooksys.team2database.exceptions.NotFoundException;
+import com.cooksys.team2database.mappers.CredentialsMapper;
 import com.cooksys.team2database.mappers.HashtagMapper;
 import com.cooksys.team2database.mappers.TweetMapper;
 import com.cooksys.team2database.mappers.UserMapper;
 import com.cooksys.team2database.repositories.TweetRepository;
+import com.cooksys.team2database.repositories.UserRepository;
 import com.cooksys.team2database.services.TweetService;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 // TODO: look over and turn reused code into functions. Rn the delete filter using 
@@ -33,9 +39,12 @@ import lombok.AllArgsConstructor;
 public class TweetServiceImpl implements TweetService {
 
 	private final TweetRepository tweetRepository;
+	private final UserRepository userRepository;
 	private final TweetMapper tweetMapper;
 	private final UserMapper userMapper;
 	private final HashtagMapper hashtagMapper;
+	private final CredentialsMapper credentialsMapper;
+
 
 	// check if tweet with given id is deleted or does not exist in database
 	private void validateTweetId(Long id) {
@@ -176,6 +185,77 @@ public class TweetServiceImpl implements TweetService {
 		List<Hashtag> tweetHashtags = tweetRepository.getReferenceById(id).getHashtags();
 
 		return hashtagMapper.entitiesToDtos(tweetHashtags);
+	}
+	
+	@Transactional
+	@Override
+	public void likeTweet(Long id, CredentialsDto credentials) {
+	    // Find the tweet by id
+	    Tweet tweet = tweetRepository.findById(id)
+	            .orElseThrow(() -> new NotFoundException("No tweet found with id: " + id));
+
+	    // Check if the tweet has been deleted
+	    if (tweet.isDeleted()) {
+	        throw new NotFoundException("The tweet with id: " + id + " has been deleted");
+	    }
+
+	    // Find the user by username
+	    User user = userRepository.findByCredentialsUsername(credentials.getUsername())
+	            .orElseThrow(() -> new BadRequestException("Invalid credentials"));
+
+	    // Verify user's password
+	    if (!user.getCredentials().getPassword().equals(credentials.getPassword())) {
+	        throw new BadRequestException("Invalid credentials");
+	    }
+
+	    // Check if the user has already liked this tweet
+	    if (tweet.getLikedByUsers().contains(user)) {
+	        throw new BadRequestException("User has already liked this tweet");
+	    }
+
+	    // Add the user to the tweet's liked users and vice versa
+	    tweet.getLikedByUsers().add(user);
+	    user.getLikedTweets().add(tweet);
+
+	    // Save the updated tweet and user
+	    tweetRepository.save(tweet);
+	    userRepository.save(user);
+	}
+
+	@Transactional
+	@Override
+	public TweetResponseDto deleteTweet(Long id, CredentialsDto credentialsDto) {
+	    // Find the tweet by id
+	    Tweet tweet = tweetRepository.findById(id)
+	            .orElseThrow(() -> new NotFoundException("No tweet found with id: " + id));
+
+	    // Find the user by username
+	    User user = userRepository.findByCredentialsUsername(credentialsDto.getUsername())
+	            .orElseThrow(() -> new BadRequestException("User not found"));
+
+	    // Verify user's password
+	    if (!user.getCredentials().getPassword().equals(credentialsDto.getPassword())) {
+	        throw new BadRequestException("Invalid credentials");
+	    }
+
+	    // Check if the user is the author of the tweet
+	    if (!tweet.getAuthor().equals(user)) {
+	        throw new BadRequestException("User is not the author of this tweet");
+	    }
+
+	    // Check if the tweet is already deleted
+	    if (tweet.isDeleted()) {
+	        throw new BadRequestException("Tweet is already deleted");
+	    }
+
+	    // Mark the tweet as deleted
+	    tweet.setDeleted(true);
+
+	    // Save and flush the changes to the database
+	    Tweet savedTweet = tweetRepository.saveAndFlush(tweet);
+
+	    // Convert the saved tweet to a DTO and return it
+	    return tweetMapper.entityToDto(savedTweet);
 	}
 
 }
