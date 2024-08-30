@@ -80,4 +80,10 @@ public class TweetController {
 		return tweetService.postReply(id, tweetRequestDto);
 	}
 	
+	@PostMapping("/{id}/repost")
+	@ResponseStatus(HttpStatus.CREATED)
+	public TweetResponseDto postRepost(@PathVariable Long id, @RequestBody TweetRequestDto tweetRequestDto) {
+		return tweetService.postRepost(id, tweetRequestDto);
+	}
+	
 }

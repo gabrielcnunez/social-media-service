@@ -218,4 +218,15 @@ public class TweetServiceImpl implements TweetService {
 		return tweetMapper.entityToDto(tweetRepository.saveAndFlush(replyToPost));
 	}
 
+	@Override
+	public TweetResponseDto postRepost(Long id, TweetRequestDto tweetRequestDto) {
+		validateTweetId(id);
+		User validUser = validUser(tweetRequestDto);
+		Tweet repostToPost = tweetMapper.requestDtoToEntity(tweetRequestDto);
+		repostToPost.setAuthor(validUser);
+		repostToPost.setRepostOf(tweetRepository.getReferenceById(id));;
+		
+		return tweetMapper.entityToDto(tweetRepository.saveAndFlush(repostToPost));
+	}
+
 }
