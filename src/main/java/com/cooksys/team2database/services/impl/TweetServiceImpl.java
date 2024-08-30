@@ -1,6 +1,7 @@
 package com.cooksys.team2database.services.impl;
 
 import java.util.ArrayDeque;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Deque;
@@ -28,7 +29,6 @@ import com.cooksys.team2database.repositories.TweetRepository;
 import com.cooksys.team2database.repositories.UserRepository;
 import com.cooksys.team2database.services.TweetService;
 
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 // TODO: look over and turn reused code into functions. Rn the delete filter using 
@@ -187,7 +187,6 @@ public class TweetServiceImpl implements TweetService {
 		return hashtagMapper.entitiesToDtos(tweetHashtags);
 	}
 	
-	@Transactional
 	@Override
 	public void likeTweet(Long id, CredentialsDto credentials) {
 	    // Find the tweet by id
@@ -222,7 +221,6 @@ public class TweetServiceImpl implements TweetService {
 	    userRepository.save(user);
 	}
 
-	@Transactional
 	@Override
 	public TweetResponseDto deleteTweet(Long id, CredentialsDto credentialsDto) {
 	    // Find the tweet by id

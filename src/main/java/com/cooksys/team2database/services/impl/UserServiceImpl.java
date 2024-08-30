@@ -22,7 +22,6 @@ import com.cooksys.team2database.mappers.UserMapper;
 import com.cooksys.team2database.repositories.UserRepository;
 import com.cooksys.team2database.services.UserService;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -76,7 +75,6 @@ public class UserServiceImpl implements UserService {
         return userMapper.entityToResponseDtos(user.getFollowing());
     }
 
-    @Transactional
     @Override
     public UserResponseDto updateUser(String username, UserRequestDto userRequestDto) {
         // Retrieve the user by username
@@ -115,7 +113,6 @@ public class UserServiceImpl implements UserService {
         return userMapper.entityToResponseDto(updatedUser);
     }
     
-    @Transactional
     @Override
     public void unfollowUser(String usernameToUnfollow, CredentialsDto credentials) {
         // Retrieve the user to unfollow
