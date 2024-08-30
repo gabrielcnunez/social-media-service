@@ -16,7 +16,6 @@ import com.cooksys.team2database.dtos.HashtagDto;
 import com.cooksys.team2database.dtos.TweetRequestDto;
 import com.cooksys.team2database.dtos.TweetResponseDto;
 import com.cooksys.team2database.dtos.UserResponseDto;
-import com.cooksys.team2database.entities.Hashtag;
 import com.cooksys.team2database.services.TweetService;
 
 import lombok.AllArgsConstructor;

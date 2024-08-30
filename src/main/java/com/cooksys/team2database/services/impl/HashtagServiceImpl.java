@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.cooksys.team2database.dtos.HashtagDto;
@@ -22,6 +23,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class HashtagServiceImpl implements HashtagService{
 	
+	@Autowired
 	private final HashtagRepository hashtagRepository;
 	private final TweetMapper tweetMapper;
 	private final HashtagMapper hashtagMapper;
