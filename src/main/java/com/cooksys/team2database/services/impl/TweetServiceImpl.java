@@ -6,13 +6,17 @@ import java.util.Comparator;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import com.cooksys.team2database.dtos.ContextDto;
+import com.cooksys.team2database.dtos.CredentialsDto;
 import com.cooksys.team2database.dtos.HashtagDto;
+import com.cooksys.team2database.dtos.TweetRequestDto;
 import com.cooksys.team2database.dtos.TweetResponseDto;
 import com.cooksys.team2database.dtos.UserResponseDto;
+import com.cooksys.team2database.entities.Credentials;
 import com.cooksys.team2database.entities.Hashtag;
 import com.cooksys.team2database.entities.Tweet;
 import com.cooksys.team2database.entities.User;
@@ -21,6 +25,7 @@ import com.cooksys.team2database.mappers.HashtagMapper;
 import com.cooksys.team2database.mappers.TweetMapper;
 import com.cooksys.team2database.mappers.UserMapper;
 import com.cooksys.team2database.repositories.TweetRepository;
+import com.cooksys.team2database.repositories.UserRepository;
 import com.cooksys.team2database.services.TweetService;
 
 import lombok.AllArgsConstructor;
@@ -35,6 +40,7 @@ public class TweetServiceImpl implements TweetService {
 	private final TweetRepository tweetRepository;
 	private final TweetMapper tweetMapper;
 	private final UserMapper userMapper;
+	private final UserRepository userRepository;
 	private final HashtagMapper hashtagMapper;
 
 	// check if tweet with given id is deleted or does not exist in database
@@ -62,6 +68,16 @@ public class TweetServiceImpl implements TweetService {
 				iterator.remove();
 			}
 		}
+	}
+	
+	private User validUser(TweetRequestDto tweetRequestDto) {
+		Optional<User> optionalUser = userRepository.findByCredentialsUsername(tweetRequestDto.getCredentials().getUsername());
+		String password = tweetRequestDto.getCredentials().getPassword();
+		if (optionalUser.isEmpty() || !password.equals(optionalUser.get().getCredentials().getPassword())) {
+			throw new NotFoundException("Username or password does not match our records");
+		}
+		
+		return optionalUser.get();
 	}
 
 	@Override
@@ -176,6 +192,15 @@ public class TweetServiceImpl implements TweetService {
 		List<Hashtag> tweetHashtags = tweetRepository.getReferenceById(id).getHashtags();
 
 		return hashtagMapper.entitiesToDtos(tweetHashtags);
+	}
+
+	@Override
+	public TweetResponseDto postTweet(TweetRequestDto tweetRequestDto) {
+		User validUser = validUser(tweetRequestDto);
+		Tweet tweetToPost = tweetMapper.requestDtoToEntity(tweetRequestDto);
+		tweetToPost.setAuthor(validUser);
+		
+		return tweetMapper.entityToDto(tweetRepository.saveAndFlush(tweetToPost));
 	}
 
 }

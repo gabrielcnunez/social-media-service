@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cooksys.team2database.dtos.ContextDto;
 import com.cooksys.team2database.dtos.HashtagDto;
+import com.cooksys.team2database.dtos.TweetRequestDto;
 import com.cooksys.team2database.dtos.TweetResponseDto;
 import com.cooksys.team2database.dtos.UserResponseDto;
 
@@ -24,5 +25,7 @@ public interface TweetService {
 	List<TweetResponseDto> getTweetReposts(Long id);
 
 	List<HashtagDto> getTweetHashtags(Long id);
+
+	TweetResponseDto postTweet(TweetRequestDto tweetRequestDto);
 
 }
