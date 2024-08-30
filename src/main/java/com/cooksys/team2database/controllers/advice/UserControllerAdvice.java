@@ -9,6 +9,7 @@ import org.springframework.web.client.HttpClientErrorException.Unauthorized;
 import com.cooksys.team2database.dtos.ErrorDto;
 import com.cooksys.team2database.exceptions.BadRequestException;
 import com.cooksys.team2database.exceptions.NotFoundException;
+import com.cooksys.team2database.exceptions.NotAuthorizedException;
 
 
 @ControllerAdvice(basePackages = {"com.cooksys.team2database.controllers"})
@@ -17,8 +18,8 @@ public class UserControllerAdvice {
 	
 	@ResponseStatus(HttpStatus.UNAUTHORIZED)
 	@ExceptionHandler(Unauthorized.class)
-	public ErrorDto handleNotAuthorizedException (BadRequestException badRequestException) {
-		return new ErrorDto(badRequestException.getMessage());
+	public ErrorDto handleNotAuthorizedException (NotAuthorizedException notAuthorizedException) {
+		return new ErrorDto(notAuthorizedException.getMessage());
 	}
 	
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
