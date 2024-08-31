@@ -95,9 +95,7 @@ public class TweetServiceImpl implements TweetService {
         Matcher mentionMatcher = Pattern.compile(mentionPattern).matcher(content);
         while (mentionMatcher.find()) {
             String username = mentionMatcher.group().substring(1);
-            System.out.println(username);
             Optional<User> optionalUser = userRepository.findByCredentialsUsername(username);
-            System.out.println(optionalUser.isEmpty());
             if (!optionalUser.isEmpty() || !optionalUser.get().isDeleted()) {
                 mentionedUsers.add(optionalUser.get());
             }
@@ -105,7 +103,7 @@ public class TweetServiceImpl implements TweetService {
 
         Matcher hashtagMatcher = Pattern.compile(hashtagPattern).matcher(content);
         while (hashtagMatcher.find()) {
-            String hashtagText = hashtagMatcher.group();
+            String hashtagText = hashtagMatcher.group().substring(1);
             Hashtag hashtag = hashtagService.getOrCreateHashtag(hashtagText);
             hashtags.add(hashtag);
         }
