@@ -18,29 +18,22 @@ public class ValidateServiceImpl implements ValidateService {
     private final UserRepository userRepository;
 
     //Checks if a hashtag exists in the database
-    
     @Override
     public boolean hashtagExists(String label) {
-        return hashtagRepository.existsByLabel(label);
+        // Remove '#' if present
+        String cleanLabel = label.startsWith("#") ? label.substring(1) : label;
+        return hashtagRepository.existsByLabel(cleanLabel);
     }
-    
-    //Checks if a username exists in the database
-    //This method checks for the existence of the username, requardless of whether the user is deleted or not
 
     @Override
     public boolean usernameExists(String username) {
-        return userRepository.existsByCredentialsUsername(username);
+        Optional<User> user = userRepository.findByCredentialsUsername(username);
+        return user.isPresent() && !user.get().isDeleted();
     }
-    
+
     @Override
-	public boolean usernameAvailable(String username) {
-		if (!usernameExists(username)) {
-			return true;
-		}
-		Optional<User> optionalDeletedUser = userRepository.findByCredentialsUsername(username);
-		if (optionalDeletedUser.get().isDeleted()) {
-			return true;
-		}
-		return false;
-	}
+    public boolean usernameAvailable(String username) {
+        Optional<User> user = userRepository.findByCredentialsUsername(username);
+        return !user.isPresent() || user.get().isDeleted();
+    }
 }
