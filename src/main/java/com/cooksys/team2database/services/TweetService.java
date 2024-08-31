@@ -35,6 +35,6 @@ public interface TweetService {
 
 	TweetResponseDto postReply(Long id, TweetRequestDto tweetRequestDto);
 
-	TweetResponseDto postRepost(Long id, TweetRequestDto tweetRequestDto);
+	TweetResponseDto postRepost(Long id, CredentialsDto credentialsDto);
 
 }

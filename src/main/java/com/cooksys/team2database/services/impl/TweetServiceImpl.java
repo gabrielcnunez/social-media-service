@@ -325,14 +325,27 @@ public class TweetServiceImpl implements TweetService {
 	}
 
 	@Override
-	public TweetResponseDto postRepost(Long id, TweetRequestDto tweetRequestDto) {
+	public TweetResponseDto postRepost(Long id, CredentialsDto credentialsDto) {
 		validateTweetId(id);
-		User validUser = validUser(tweetRequestDto);
-		Tweet repostToPost = tweetMapper.requestDtoToEntity(tweetRequestDto);
-		repostToPost.setAuthor(validUser);
-		repostToPost.setRepostOf(tweetRepository.getReferenceById(id));;
+		Credentials credentials = credentialsMapper.dtoToEntity(credentialsDto);
+		Optional<User> validUser = userRepository.findByCredentialsUsername(credentials.getUsername());
 		
-		return tweetMapper.entityToDto(tweetRepository.saveAndFlush(repostToPost));
+		String password = validUser.get().getCredentials().getPassword();
+		if (validUser.isEmpty() || !password.equals(credentials.getPassword())) {
+			throw new NotAuthorizedException("Username or password does not match our records");
+		}
+		
+		Tweet repostToPost = new Tweet();
+		Tweet tweetBeingReposted = tweetRepository.getReferenceById(id);
+		repostToPost.setAuthor(validUser.get());
+		repostToPost.setRepostOf(tweetBeingReposted);
+		repostToPost = tweetRepository.saveAndFlush(repostToPost);
+		
+		List<Tweet> tweetBeingRepostedReposts = tweetBeingReposted.getReposts();
+		tweetBeingRepostedReposts.add(repostToPost);
+		tweetBeingReposted.setReposts(tweetBeingRepostedReposts);
+		tweetRepository.saveAndFlush(tweetBeingReposted);
+		return tweetMapper.entityToDto(repostToPost);
 	}
 
 }
