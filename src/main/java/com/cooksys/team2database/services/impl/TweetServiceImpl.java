@@ -45,7 +45,6 @@ import lombok.AllArgsConstructor;
 public class TweetServiceImpl implements TweetService {
 
 	private final TweetRepository tweetRepository;
-	private final UserRepository userRepository;
 	private final TweetMapper tweetMapper;
 	private final UserMapper userMapper;
 	private final UserRepository userRepository;
