@@ -249,16 +249,20 @@ public class TweetServiceImpl implements TweetService {
 
 	    // Check if the user has already liked this tweet
 	    if (tweet.getLikedByUsers().contains(user)) {
-	        throw new BadRequestException("User has already liked this tweet");
+	        // Unlike the tweet
+	        tweet.getLikedByUsers().remove(user);
+	        user.getLikedTweets().remove(tweet);
+	    } else {
+	        // Like the tweet
+	        tweet.getLikedByUsers().add(user);
+	        user.getLikedTweets().add(tweet);
+	        tweetRepository.save(tweet);
+		    userRepository.save(user);
 	    }
 
-	    // Add the user to the tweet's liked users and vice versa
-	    tweet.getLikedByUsers().add(user);
-	    user.getLikedTweets().add(tweet);
-
-	    // Save the updated tweet and user
+	    /* Save the updated tweet and user
 	    tweetRepository.save(tweet);
-	    userRepository.save(user);
+	    userRepository.save(user);*/
 	}
 
 	@Override
