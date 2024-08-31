@@ -109,6 +109,15 @@ public class UserServiceImpl implements UserService {
 	}
 	
 	@Override
+	public List<TweetResponseDto> getUserMentions(String username) {
+		User user = getUser(username);
+		List<Tweet> userMentions = user.getMentionedTweets();
+		sortTweets(userMentions);
+		
+		return tweetMapper.entitiesToDtos(userMentions);
+	}
+	
+	@Override
 	public List<UserResponseDto> getUserFollowers(String username) {
 		User user = getUser(username);
 
@@ -278,5 +287,7 @@ public class UserServiceImpl implements UserService {
 	    // Save both updated users in a single transaction
 	    userRepository.saveAll(Arrays.asList(follower, userToUnfollow));
 	}
+
+	
 
 }
