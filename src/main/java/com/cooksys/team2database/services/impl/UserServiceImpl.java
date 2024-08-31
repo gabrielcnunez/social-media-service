@@ -55,26 +55,59 @@ public class UserServiceImpl implements UserService {
 	}
 
 	// checks if user exists in database
-	private void doesUserExist(Optional<User> user) {
+	private boolean doesUserExist(Optional<User> user) {
 		if (user.isEmpty() || user.get().isDeleted()) {
-			throw new NotFoundException("User not found!");
+			return false;
 		}
+		return true;
 	}
 
-	private void validateCreateUser(UserRequestDto userRequestDto) {
+	private boolean validateCreateUserRequest(UserRequestDto userRequestDto) {
 
 		validateCredentials(userMapper.requestDtoToEntity(userRequestDto).getCredentials());
 		validateProfile(userMapper.requestDtoToEntity(userRequestDto).getProfile());
 
-		// if the given username exists, throw error.
-		// Originally, I tried to use NotUnauthorizedException but it throws an error
-		// 500 (fails the postman test).
-		// BadRequestException throws a 400 (passes the postman test)
-		if (userRepository.existsByCredentialsUsername(
-				userMapper.requestDtoToEntity(userRequestDto).getCredentials().getUsername())) {
-			throw new BadRequestException("Username already exists!");
+		Optional<User> user = userRepository.findByCredentialsUsername(
+				userMapper.requestDtoToEntity(userRequestDto).getCredentials().getUsername());
+
+		// check if the username already exists
+		if (user.isEmpty()) {
+			return true;
 		}
 
+		Credentials requestedCredentials = userMapper.requestDtoToEntity(userRequestDto).getCredentials();
+		Credentials existingCredentials = user.get().getCredentials();
+
+		// if the username already exists, check if the requested credentials match the
+		// existing credentials
+		if (existingCredentials.getUsername().equals(requestedCredentials.getUsername())) {
+
+			// if the user is not deleted
+			if (!user.get().isDeleted()) {
+				throw new BadRequestException("User already exists!");
+			}
+
+			// if the requested password is incorrect
+			// TODO: change to unauthorized error later
+			if (!existingCredentials.getPassword().equals(requestedCredentials.getPassword())) {
+				throw new BadRequestException("Incorrect password!");
+			}
+		}
+		return false;
+	}
+
+	private UserResponseDto reactivateUser(UserRequestDto userRequestDto) {
+		User updatedUser = userMapper.requestDtoToEntity(userRequestDto);
+		Optional<User> reactivatedUser = userRepository.findByCredentialsUsername(
+				userMapper.requestDtoToEntity(userRequestDto).getCredentials().getUsername());
+		// re-activate all tweets
+		for (Tweet tweet : reactivatedUser.get().getTweets()) {
+			tweet.setDeleted(false);
+		}
+		// re-activate user
+		reactivatedUser.get().setDeleted(false);
+		reactivatedUser.get().setProfile(updatedUser.getProfile());
+		return userMapper.entityToResponseDto(userRepository.saveAndFlush(reactivatedUser.get()));
 	}
 
 	@Override
@@ -107,16 +140,16 @@ public class UserServiceImpl implements UserService {
 
 		return tweetMapper.entitiesToDtos(userFeed);
 	}
-	
+
 	@Override
 	public List<TweetResponseDto> getUserMentions(String username) {
 		User user = getUser(username);
 		List<Tweet> userMentions = user.getMentionedTweets();
 		sortTweets(userMentions);
-		
+
 		return tweetMapper.entitiesToDtos(userMentions);
 	}
-	
+
 	@Override
 	public List<UserResponseDto> getUserFollowers(String username) {
 		User user = getUser(username);
@@ -146,26 +179,32 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserResponseDto createUser(UserRequestDto userRequestDto) {
-		validateCreateUser(userRequestDto);
-		User newUser = new User();
-		newUser.setCredentials(userMapper.requestDtoToEntity(userRequestDto).getCredentials());
-		newUser.setProfile(userMapper.requestDtoToEntity(userRequestDto).getProfile());
-		return userMapper.entityToResponseDto(userRepository.saveAndFlush(newUser));
+		if (validateCreateUserRequest(userRequestDto)) {
+			User newUser = new User();
+			newUser.setCredentials(userMapper.requestDtoToEntity(userRequestDto).getCredentials());
+			newUser.setProfile(userMapper.requestDtoToEntity(userRequestDto).getProfile());
+			return userMapper.entityToResponseDto(userRepository.saveAndFlush(newUser));
+		}
+		return reactivateUser(userRequestDto);
 	}
 
 	// this can definitely be cleaned up
 	// possible redundancy in the error checks?
-	
+
 	@Override
 	public void followUser(String username, CredentialsDto credentialsDto) {
 		validateCredentials(credentialsMapper.dtoToEntity(credentialsDto));
 
 		Optional<User> follower = userRepository
 				.findByCredentialsUsername(credentialsMapper.dtoToEntity(credentialsDto).getUsername());
-		doesUserExist(follower);
+		if (!doesUserExist(follower)) {
+			throw new NotFoundException("User not found!");
+		}
 
 		Optional<User> followed = userRepository.findByCredentialsUsername(username);
-		doesUserExist(followed);
+		if (!doesUserExist(followed)) {
+			throw new NotFoundException("User not found!");
+		}
 
 		// if the following relationship already exists
 		if (follower.get().getFollowing().contains(followed.get())
@@ -213,81 +252,78 @@ public class UserServiceImpl implements UserService {
 
 		return userMapper.entityToResponseDto(userRepository.saveAndFlush(userToDelete.get()));
 	}
-	
 
 	@Override
 	public UserResponseDto updateUser(String username, UserRequestDto userRequestDto) {
-	    // Retrieve the user by username
-	    User user = getUser(username);
+		// Retrieve the user by username
+		User user = getUser(username);
 
-	    // Validate credentials
-	    if (userRequestDto.getCredentials() == null) {
-	        throw new BadRequestException("Credentials must be provided");
-	    }
-	    
-	    // Verify the provided credentials match the user's current credentials
-	    if (!user.getCredentials().getUsername().equals(userRequestDto.getCredentials().getUsername())
-	            || !user.getCredentials().getPassword().equals(userRequestDto.getCredentials().getPassword())) {
-	        throw new BadRequestException("Invalid credentials");
-	    }
+		// Validate credentials
+		if (userRequestDto.getCredentials() == null) {
+			throw new BadRequestException("Credentials must be provided");
+		}
 
-	    // Check if profile update is requested
-	    if (userRequestDto.getProfile() != null) {
-	        Profile userProfile = user.getProfile();
-	        ProfileDto newProfileDto = userRequestDto.getProfile();
+		// Verify the provided credentials match the user's current credentials
+		if (!user.getCredentials().getUsername().equals(userRequestDto.getCredentials().getUsername())
+				|| !user.getCredentials().getPassword().equals(userRequestDto.getCredentials().getPassword())) {
+			throw new BadRequestException("Invalid credentials");
+		}
 
-	        // Update profile fields if new values are provided
-	        if (newProfileDto.getFirstName() != null) {
-	            userProfile.setFirstName(newProfileDto.getFirstName());
-	        }
-	        if (newProfileDto.getLastName() != null) {
-	            userProfile.setLastName(newProfileDto.getLastName());
-	        }
-	        if (newProfileDto.getEmail() != null) {
-	            userProfile.setEmail(newProfileDto.getEmail());
-	        }
-	        if (newProfileDto.getPhone() != null) {
-	            userProfile.setPhone(newProfileDto.getPhone());
-	        }
-	    } else {
-	        throw new BadRequestException("Profile must be provided for update");
-	    }
+		// Check if profile update is requested
+		if (userRequestDto.getProfile() != null) {
+			Profile userProfile = user.getProfile();
+			ProfileDto newProfileDto = userRequestDto.getProfile();
 
-	    // Save the updated user to the database and flush changes
-	    User updatedUser = userRepository.saveAndFlush(user);
+			// Update profile fields if new values are provided
+			if (newProfileDto.getFirstName() != null) {
+				userProfile.setFirstName(newProfileDto.getFirstName());
+			}
+			if (newProfileDto.getLastName() != null) {
+				userProfile.setLastName(newProfileDto.getLastName());
+			}
+			if (newProfileDto.getEmail() != null) {
+				userProfile.setEmail(newProfileDto.getEmail());
+			}
+			if (newProfileDto.getPhone() != null) {
+				userProfile.setPhone(newProfileDto.getPhone());
+			}
+		} else {
+			throw new BadRequestException("Profile must be provided for update");
+		}
 
-	    // Convert the updated user entity to a DTO and return it
-	    return userMapper.entityToResponseDto(updatedUser);
+		// Save the updated user to the database and flush changes
+		User updatedUser = userRepository.saveAndFlush(user);
+
+		// Convert the updated user entity to a DTO and return it
+		return userMapper.entityToResponseDto(updatedUser);
 	}
-	
 
 	@Override
 	public void unfollowUser(String usernameToUnfollow, CredentialsDto credentials) {
-	    // Retrieve the user to unfollow
-	    User userToUnfollow = getUser(usernameToUnfollow);
+		// Retrieve the user to unfollow
+		User userToUnfollow = getUser(usernameToUnfollow);
 
-	    // Find the follower user by their username
-	    User follower = userRepository.findByCredentialsUsername(credentials.getUsername())
-	            .orElseThrow(() -> new BadRequestException("Invalid credentials"));
+		// Find the follower user by their username
+		User follower = userRepository.findByCredentialsUsername(credentials.getUsername())
+				.orElseThrow(() -> new BadRequestException("Invalid credentials"));
 
-	    // Verify the follower's password
-	    if (!follower.getCredentials().getPassword().equals(credentials.getPassword())) {
-	        throw new BadRequestException("Invalid credentials");
-	    }
+		// Verify the follower's password
+		if (!follower.getCredentials().getPassword().equals(credentials.getPassword())) {
+			throw new BadRequestException("Invalid credentials");
+		}
 
-	    // Check if the follower is actually following the user
-	    if (!follower.getFollowing().contains(userToUnfollow)) {
-	        throw new BadRequestException("Not following this user");
-	    }
+		// Check if the follower is actually following the user
+		if (!follower.getFollowing().contains(userToUnfollow)) {
+			throw new BadRequestException("Not following this user");
+		}
 
-	    // Remove the userToUnfollow from the follower's following list and remove the follower from the userToUnfollow's followers list
-	    follower.getFollowing().remove(userToUnfollow);
-	    userToUnfollow.getFollowers().remove(follower);
+		// Remove the userToUnfollow from the follower's following list and remove the
+		// follower from the userToUnfollow's followers list
+		follower.getFollowing().remove(userToUnfollow);
+		userToUnfollow.getFollowers().remove(follower);
 
-	    // Save both updated users in a single transaction
-	    userRepository.saveAll(Arrays.asList(follower, userToUnfollow));
+		// Save both updated users in a single transaction
+		userRepository.saveAll(Arrays.asList(follower, userToUnfollow));
 	}
-
-	
 
 }
