@@ -1,9 +1,7 @@
 package com.cooksys.team2database.services.impl;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -19,17 +17,14 @@ import com.cooksys.team2database.dtos.HashtagDto;
 import com.cooksys.team2database.dtos.TweetRequestDto;
 import com.cooksys.team2database.dtos.TweetResponseDto;
 import com.cooksys.team2database.dtos.UserResponseDto;
-import com.cooksys.team2database.entities.Credentials;
 import com.cooksys.team2database.entities.Hashtag;
 import com.cooksys.team2database.entities.Tweet;
 import com.cooksys.team2database.entities.User;
 import com.cooksys.team2database.exceptions.BadRequestException;
 import com.cooksys.team2database.exceptions.NotFoundException;
-import com.cooksys.team2database.mappers.CredentialsMapper;
 import com.cooksys.team2database.mappers.HashtagMapper;
 import com.cooksys.team2database.mappers.TweetMapper;
 import com.cooksys.team2database.mappers.UserMapper;
-import com.cooksys.team2database.repositories.HashtagRepository;
 import com.cooksys.team2database.repositories.TweetRepository;
 import com.cooksys.team2database.repositories.UserRepository;
 import com.cooksys.team2database.services.HashtagService;
@@ -45,14 +40,12 @@ import lombok.AllArgsConstructor;
 public class TweetServiceImpl implements TweetService {
 
 	private final TweetRepository tweetRepository;
-	private final UserRepository userRepository;
 	private final TweetMapper tweetMapper;
 	private final UserMapper userMapper;
 	private final UserRepository userRepository;
 	private final HashtagMapper hashtagMapper;
 	@Autowired
 	private final HashtagService hashtagService;
-	private final CredentialsMapper credentialsMapper;
 
 	// check if tweet with given id is deleted or does not exist in database
 	private void validateTweetId(Long id) {
