@@ -17,11 +17,14 @@ import com.cooksys.team2database.dtos.HashtagDto;
 import com.cooksys.team2database.dtos.TweetRequestDto;
 import com.cooksys.team2database.dtos.TweetResponseDto;
 import com.cooksys.team2database.dtos.UserResponseDto;
+import com.cooksys.team2database.entities.Credentials;
 import com.cooksys.team2database.entities.Hashtag;
 import com.cooksys.team2database.entities.Tweet;
 import com.cooksys.team2database.entities.User;
 import com.cooksys.team2database.exceptions.BadRequestException;
+import com.cooksys.team2database.exceptions.NotAuthorizedException;
 import com.cooksys.team2database.exceptions.NotFoundException;
+import com.cooksys.team2database.mappers.CredentialsMapper;
 import com.cooksys.team2database.mappers.HashtagMapper;
 import com.cooksys.team2database.mappers.TweetMapper;
 import com.cooksys.team2database.mappers.UserMapper;
@@ -39,6 +42,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class TweetServiceImpl implements TweetService {
 
+	private final CredentialsMapper credentialsMapper;
 	private final TweetRepository tweetRepository;
 	private final TweetMapper tweetMapper;
 	private final UserMapper userMapper;
@@ -75,10 +79,14 @@ public class TweetServiceImpl implements TweetService {
 	}
 	
 	private User validUser(TweetRequestDto tweetRequestDto) {
+		Credentials credentials = credentialsMapper.dtoToEntity(tweetRequestDto.getCredentials());
+		if (credentials == null || credentials.getUsername() == null || credentials.getPassword() == null) {
+			throw new BadRequestException("");
+		}
 		Optional<User> optionalUser = userRepository.findByCredentialsUsername(tweetRequestDto.getCredentials().getUsername());
-		String password = tweetRequestDto.getCredentials().getPassword();
-		if (optionalUser.isEmpty() || !password.equals(optionalUser.get().getCredentials().getPassword())) {
-			throw new NotFoundException("Username or password does not match our records");
+		String password = optionalUser.get().getCredentials().getPassword();
+		if (optionalUser.isEmpty() || !password.equals(credentials.getPassword())) {
+			throw new NotAuthorizedException("Username or password does not match our records");
 		}
 		
 		return optionalUser.get();
@@ -290,11 +298,11 @@ public class TweetServiceImpl implements TweetService {
 
 	@Override
 	public TweetResponseDto postTweet(TweetRequestDto tweetRequestDto) {
-		if (tweetRequestDto.getContent().isEmpty()) {
-			throw new BadRequestException("Reply cannot be blank");
-		}
 		User validUser = validUser(tweetRequestDto);
 		Tweet tweetToPost = tweetMapper.requestDtoToEntity(tweetRequestDto);
+		if (tweetToPost.getContent() == null || tweetToPost.getContent().isBlank()) {
+			throw new BadRequestException("Tweet cannot be blank");
+		}
 		tweetToPost.setAuthor(validUser);
 		setMentionsAndHashtags(tweetToPost);
 		
