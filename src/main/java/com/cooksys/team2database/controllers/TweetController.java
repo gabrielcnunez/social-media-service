@@ -3,6 +3,8 @@ package com.cooksys.team2database.controllers;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cooksys.team2database.dtos.ContextDto;
+import com.cooksys.team2database.dtos.CredentialsDto;
 import com.cooksys.team2database.dtos.HashtagDto;
 import com.cooksys.team2database.dtos.TweetRequestDto;
 import com.cooksys.team2database.dtos.TweetResponseDto;
@@ -66,6 +69,14 @@ public class TweetController {
 	public List<HashtagDto> getTweetHashtags(@PathVariable Long id){
 		return tweetService.getTweetHashtags(id);
 	}
+	@PostMapping("/{id}/like")
+	public void likeTweet(@PathVariable Long id, @RequestBody CredentialsDto credentials) {
+	    tweetService.likeTweet(id, credentials);
+	}
+	@DeleteMapping("/{id}")
+    public TweetResponseDto deleteTweet(@PathVariable Long id, @RequestBody CredentialsDto credentials) {
+        return tweetService.deleteTweet(id, credentials);
+    }
 	
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
