@@ -1,21 +1,25 @@
 package com.cooksys.team2database.services.impl;
 
 import java.util.ArrayDeque;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.cooksys.team2database.dtos.ContextDto;
 import com.cooksys.team2database.dtos.CredentialsDto;
 import com.cooksys.team2database.dtos.HashtagDto;
+import com.cooksys.team2database.dtos.TweetRequestDto;
 import com.cooksys.team2database.dtos.TweetResponseDto;
 import com.cooksys.team2database.dtos.UserResponseDto;
+import com.cooksys.team2database.entities.Credentials;
 import com.cooksys.team2database.entities.Hashtag;
 import com.cooksys.team2database.entities.Tweet;
 import com.cooksys.team2database.entities.User;
@@ -25,8 +29,10 @@ import com.cooksys.team2database.mappers.CredentialsMapper;
 import com.cooksys.team2database.mappers.HashtagMapper;
 import com.cooksys.team2database.mappers.TweetMapper;
 import com.cooksys.team2database.mappers.UserMapper;
+import com.cooksys.team2database.repositories.HashtagRepository;
 import com.cooksys.team2database.repositories.TweetRepository;
 import com.cooksys.team2database.repositories.UserRepository;
+import com.cooksys.team2database.services.HashtagService;
 import com.cooksys.team2database.services.TweetService;
 
 import lombok.AllArgsConstructor;
@@ -42,9 +48,11 @@ public class TweetServiceImpl implements TweetService {
 	private final UserRepository userRepository;
 	private final TweetMapper tweetMapper;
 	private final UserMapper userMapper;
+	private final UserRepository userRepository;
 	private final HashtagMapper hashtagMapper;
+	@Autowired
+	private final HashtagService hashtagService;
 	private final CredentialsMapper credentialsMapper;
-
 
 	// check if tweet with given id is deleted or does not exist in database
 	private void validateTweetId(Long id) {
@@ -72,6 +80,46 @@ public class TweetServiceImpl implements TweetService {
 			}
 		}
 	}
+	
+	private User validUser(TweetRequestDto tweetRequestDto) {
+		Optional<User> optionalUser = userRepository.findByCredentialsUsername(tweetRequestDto.getCredentials().getUsername());
+		String password = tweetRequestDto.getCredentials().getPassword();
+		if (optionalUser.isEmpty() || !password.equals(optionalUser.get().getCredentials().getPassword())) {
+			throw new NotFoundException("Username or password does not match our records");
+		}
+		
+		return optionalUser.get();
+	}
+	
+	public void setMentionsAndHashtags(Tweet tweet) {
+        String content = tweet.getContent();  
+        String mentionPattern = "@\\w+";
+        String hashtagPattern = "#\\w+";
+
+        List<User> mentionedUsers = new ArrayList<>();
+        List<Hashtag> hashtags = new ArrayList<>();
+
+        Matcher mentionMatcher = Pattern.compile(mentionPattern).matcher(content);
+        while (mentionMatcher.find()) {
+            String username = mentionMatcher.group().substring(1);
+            System.out.println(username);
+            Optional<User> optionalUser = userRepository.findByCredentialsUsername(username);
+            System.out.println(optionalUser.isEmpty());
+            if (!optionalUser.isEmpty() || !optionalUser.get().isDeleted()) {
+                mentionedUsers.add(optionalUser.get());
+            }
+        }
+
+        Matcher hashtagMatcher = Pattern.compile(hashtagPattern).matcher(content);
+        while (hashtagMatcher.find()) {
+            String hashtagText = hashtagMatcher.group();
+            Hashtag hashtag = hashtagService.getOrCreateHashtag(hashtagText);
+            hashtags.add(hashtag);
+        }
+
+        tweet.setMentionedUsers(mentionedUsers);
+        tweet.setHashtags(hashtags);
+    }
 
 	@Override
 	public List<TweetResponseDto> getAllTweets() {
@@ -144,13 +192,6 @@ public class TweetServiceImpl implements TweetService {
 		return userMapper.entityToResponseDtos(likedByUsers);
 	}
 
-	// TODO: IMPORTANT: when a tweet with content is created, the server must
-	// process the tweet's content for @{username} mentions and #{hashtag} tags.
-	// There is no way to create hashtags or create mentions from the API, so this
-	// must be handled automatically!
-	
-	// I'm guessing this is going to be using regex and will read through the
-	// content of a tweet during a post request.
 	@Override
 	public List<UserResponseDto> getUsersMentionedFromTweet(Long id) {
 		validateTweetId(id);
@@ -254,6 +295,45 @@ public class TweetServiceImpl implements TweetService {
 
 	    // Convert the saved tweet to a DTO and return it
 	    return tweetMapper.entityToDto(savedTweet);
+	}
+
+	@Override
+	public TweetResponseDto postTweet(TweetRequestDto tweetRequestDto) {
+		if (tweetRequestDto.getContent().isEmpty()) {
+			throw new BadRequestException("Reply cannot be blank");
+		}
+		User validUser = validUser(tweetRequestDto);
+		Tweet tweetToPost = tweetMapper.requestDtoToEntity(tweetRequestDto);
+		tweetToPost.setAuthor(validUser);
+		setMentionsAndHashtags(tweetToPost);
+		
+		return tweetMapper.entityToDto(tweetRepository.saveAndFlush(tweetToPost));
+	}
+
+	@Override
+	public TweetResponseDto postReply(Long id, TweetRequestDto tweetRequestDto) {
+		validateTweetId(id);
+		if (tweetRequestDto.getContent().isEmpty()) {
+			throw new BadRequestException("Reply cannot be blank");
+		}
+		User validUser = validUser(tweetRequestDto);
+		Tweet replyToPost = tweetMapper.requestDtoToEntity(tweetRequestDto);
+		replyToPost.setAuthor(validUser);
+		replyToPost.setInReplyTo(tweetRepository.getReferenceById(id));
+		setMentionsAndHashtags(replyToPost);
+		
+		return tweetMapper.entityToDto(tweetRepository.saveAndFlush(replyToPost));
+	}
+
+	@Override
+	public TweetResponseDto postRepost(Long id, TweetRequestDto tweetRequestDto) {
+		validateTweetId(id);
+		User validUser = validUser(tweetRequestDto);
+		Tweet repostToPost = tweetMapper.requestDtoToEntity(tweetRequestDto);
+		repostToPost.setAuthor(validUser);
+		repostToPost.setRepostOf(tweetRepository.getReferenceById(id));;
+		
+		return tweetMapper.entityToDto(tweetRepository.saveAndFlush(repostToPost));
 	}
 
 }

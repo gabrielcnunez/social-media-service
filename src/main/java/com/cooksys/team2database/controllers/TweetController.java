@@ -2,21 +2,23 @@ package com.cooksys.team2database.controllers;
 
 import java.util.List;
 
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cooksys.team2database.dtos.ContextDto;
 import com.cooksys.team2database.dtos.CredentialsDto;
 import com.cooksys.team2database.dtos.HashtagDto;
+import com.cooksys.team2database.dtos.TweetRequestDto;
 import com.cooksys.team2database.dtos.TweetResponseDto;
 import com.cooksys.team2database.dtos.UserResponseDto;
-import com.cooksys.team2database.entities.Hashtag;
 import com.cooksys.team2database.services.TweetService;
 
 import lombok.AllArgsConstructor;
@@ -75,5 +77,23 @@ public class TweetController {
     public TweetResponseDto deleteTweet(@PathVariable Long id, @RequestBody CredentialsDto credentials) {
         return tweetService.deleteTweet(id, credentials);
     }
+	
+	@PostMapping
+	@ResponseStatus(HttpStatus.CREATED)
+	public TweetResponseDto postTweet(@RequestBody TweetRequestDto tweetRequestDto) {
+		return tweetService.postTweet(tweetRequestDto);
+	}
+	
+	@PostMapping("/{id}/reply")
+	@ResponseStatus(HttpStatus.CREATED)
+	public TweetResponseDto postReply(@PathVariable Long id, @RequestBody TweetRequestDto tweetRequestDto) {
+		return tweetService.postReply(id, tweetRequestDto);
+	}
+	
+	@PostMapping("/{id}/repost")
+	@ResponseStatus(HttpStatus.CREATED)
+	public TweetResponseDto postRepost(@PathVariable Long id, @RequestBody TweetRequestDto tweetRequestDto) {
+		return tweetService.postRepost(id, tweetRequestDto);
+	}
 	
 }

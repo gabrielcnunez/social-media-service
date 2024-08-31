@@ -5,6 +5,7 @@ import java.util.List;
 import com.cooksys.team2database.dtos.ContextDto;
 import com.cooksys.team2database.dtos.CredentialsDto;
 import com.cooksys.team2database.dtos.HashtagDto;
+import com.cooksys.team2database.dtos.TweetRequestDto;
 import com.cooksys.team2database.dtos.TweetResponseDto;
 import com.cooksys.team2database.dtos.UserResponseDto;
 
@@ -29,5 +30,11 @@ public interface TweetService {
 	void likeTweet(Long id, CredentialsDto credentials);
 	
 	TweetResponseDto deleteTweet(Long id, CredentialsDto credentials);
+
+	TweetResponseDto postTweet(TweetRequestDto tweetRequestDto);
+
+	TweetResponseDto postReply(Long id, TweetRequestDto tweetRequestDto);
+
+	TweetResponseDto postRepost(Long id, TweetRequestDto tweetRequestDto);
 
 }
